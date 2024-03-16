@@ -1,8 +1,4 @@
 <template>
-  <nav>
-    <router-link to="/employee"> employee </router-link> -
-    <router-link to="/"> login </router-link>
-  </nav>
   <RouterView />
 </template>
 
@@ -16,7 +12,7 @@
   text-align: center;
   margin: 0;
   padding: 0;
-  background-color: rgb(246, 245, 245);
+  background-color: white;
   height: 100vh;
 }
 </style>

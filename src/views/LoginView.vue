@@ -1,6 +1,6 @@
 <template>
     <div class="login">
-      <img src="@/assets/VERMEG_Logo.jpg" alt="vermeg-logo">
+      <img src="@/assets/VERMEG_Logo.png" alt="vermeg-logo">
       <form @submit.prevent="login">
           <h2>Sign in</h2>
           <div class="container">
