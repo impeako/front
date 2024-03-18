@@ -12,6 +12,7 @@
         <img :src="image" alt="profile picture">
       </v-avatar>
       <v-card-title class="mb-5">
+        Employee Name
         {{firstname}} {{ lastname }}
       </v-card-title>
     </v-card-item>
@@ -23,7 +24,6 @@
       <p class="information">Birth date : {{ birth }}</p>
       <p class="information">Email address : {{ email }}</p>
       <p class="information">Phone number : {{ number }}</p>
-      <p class="information">Address : {{ address }}</p>
     </v-card-text>
   </v-card>
 
@@ -49,5 +49,6 @@
   .information {
     font-size: 15px;
     padding: 5px;
+    margin-bottom: 5px;
   }
 </style>

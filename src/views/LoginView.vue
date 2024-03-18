@@ -38,15 +38,9 @@
             const store = useTokenStore()
             store.setToken(access_token)
             store.setRole(role)
-            console.log('user role',role)
-            if(role == "EMPLOYEE"){
-              router.push('/employee')
-            }
-            else if (role == "ADMIN") {
-              router.push('/admin')
-            } else if (role == "HR"){
-              router.push('/hr')
-            }
+            store.authenticate()
+            localStorage.setItem('authToken', access_token)
+            localStorage.setItem('userRole', role)
             router.push('/employee')
           })
           .catch(error => {

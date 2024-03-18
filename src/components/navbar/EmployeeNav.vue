@@ -29,7 +29,15 @@
           <router-link to="/employee/assistance">
           <v-list-item prepend-icon="mdi-progress-helper" title="Assistance" value="Assistance" class="icons text-left"></v-list-item>
           </router-link>
-          <router-link to="/login">
+          <v-divider></v-divider>
+          <router-link to="/admin/user-managemnt">
+          <v-list-item prepend-icon="mdi-account-edit w" title="users management" value="management" class="icons text-left" v-if="role === 'ADMIN'"></v-list-item>
+          </router-link>
+          <router-link to="/admin/dashboard">
+          <v-list-item prepend-icon="mdi-google-analytics" title="dashboard" value="dashboard" class="icons text-left" v-if="role === 'ADMIN'"></v-list-item>
+          </router-link>
+          <v-divider></v-divider>
+          <router-link to="/">
           <v-list-item prepend-icon="mdi-logout" title="Logout" value="Logout" class="icons text-left" @click="logout"></v-list-item>
           </router-link>
         </v-list>
@@ -42,12 +50,17 @@
   import { useTokenStore } from '../../stores/token';
 
   export default {
-  methods: {
-    logout() {
-      useTokenStore().clearToken();
-      console.log("you have logged out !")
+    data: () => ({
+      role: localStorage.getItem("userRole"),
+    }),
+    methods: {
+      logout() {
+        useTokenStore().clearToken();
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userRole');
+        console.log("you have logged out !")
+      },
     },
-  },
 };
 </script>
 
