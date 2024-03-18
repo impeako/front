@@ -15,6 +15,9 @@
   
   <script>
   import axios from 'axios';
+  import { useTokenStore } from '../stores/token';
+  import router from '../router/index';
+
   export default{
     name: "LoginCom",
     data() {
@@ -31,12 +34,24 @@
         };
         axios.post('http://localhost:8081/edrms/auth/authenticate', requestBody)
           .then(response => {
-            //const { accessToken, refreshToken } = response.data;
-            console.log(response.data);
+            const { access_token, refresh_token , role} = response.data;
+            const store = useTokenStore()
+            store.setToken(access_token)
+            store.setRole(role)
+            console.log('user role',role)
+            if(role == "EMPLOYEE"){
+              router.push('/employee')
+            }
+            else if (role == "ADMIN") {
+              router.push('/admin')
+            } else if (role == "HR"){
+              router.push('/hr')
+            }
+            router.push('/employee')
           })
           .catch(error => {
-            //this.error = 'Authentication failed. Please check your credentials.';
-            console.log(error,'Authentication failed. Please check your credentials.');
+            console.error(error);
+            console.log('Authentication failed. Please check your credentials.');
           });
         }
       }
@@ -52,8 +67,7 @@
           position: relative;
           overflow: hidden;
           text-align: center;
-          margin-top: 50px;
-          background-color: white;
+          margin-top: 150px;
       }
       img {
         width: 300px;
