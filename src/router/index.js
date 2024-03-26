@@ -6,6 +6,8 @@ import AnswsersView from '../views/employee/AnswersView.vue'
 import AssistanceView from '../views/employee/AssistanceView.vue'
 import AdminView from '../views/Admin/AdminView.vue'
 import DashboardView from '../views/Admin/DashboardView.vue'
+import HrView from '../views/Hr/HrView.vue'
+import DocumentsView from '../views/Hr/DocumentsView.vue'
 import { useTokenStore } from '../stores/token';
 
 const router = createRouter({
@@ -57,6 +59,30 @@ const router = createRouter({
       beforeEnter(to){
         const store = useTokenStore();
         if(store.getRole() !== 'ADMIN'){
+          alert("you are not authorized")
+          return ('/employee')
+        }
+      }
+    },
+    {
+      path:'/hr/requests-treatment',
+      name: 'requests treatment',
+      component: HrView,
+      beforeEnter(to){
+        const store = useTokenStore();
+        if(store.getRole() !== 'HR'){
+          alert("you are not authorized")
+          return ('/employee')
+        }
+      }
+    },
+    {
+      path:'/hr/documents-management',
+      name: 'Documents management',
+      component: DocumentsView,
+      beforeEnter(to){
+        const store = useTokenStore();
+        if(store.getRole() !== 'HR'){
           alert("you are not authorized")
           return ('/employee')
         }

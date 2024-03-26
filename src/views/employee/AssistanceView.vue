@@ -33,7 +33,7 @@
   
   <script>
     import LogoComponent from "../../components/LogoComponent.vue";
-    import EmployeeNav from "../../components/navbar/EmployeeNav.vue"
+    import EmployeeNav from "../../components/UserNavBar.vue"
   export default {
     components: {
             EmployeeNav,

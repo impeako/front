@@ -4,7 +4,7 @@
             <v-row no-gutters>
                 <v-col cols="6" class="form pa-10 mr-10">
                     <form @submit.prevent="submit">
-                        <h2 class="mb-5">User regestration</h2>
+                        <h2 class="mb-5">Add Users</h2>
                         <v-row class="name mt-10">
                             <v-text-field
                             v-model="firstname"
@@ -90,6 +90,7 @@
                             type="submit"
                             size="x-large"
                             color="#0a66c2"
+                            @click="submitForm()"
                             >
                             Regesiter
                             </v-btn>
@@ -97,13 +98,20 @@
                     </form>
                 </v-col>
                 <v-col class="ml-10">
-                    <v-expansion-panels variant="accordion">
-                        <v-text-field 
-                        v-model="user"
+                    <v-text-field 
+                        v-model="searchedUser"
                         label="Search for User"
                         hide-details
+                        @input="searchUser"
+                        @keydown.delete="searchUser($event)"
+                        class="search"
+                        variant="underlined"
+                        clearable
+                        @clear="resetSearch()"
+                        append-inner-icon="mdi-account-search"
                         >
                         </v-text-field>
+                    <v-expansion-panels variant="accordion">
                     <v-expansion-panel v-for="(user, index) in userData" :key="index">
                         <v-expansion-panel-title>
                             <v-row class="title-row">
@@ -140,11 +148,11 @@
                         </v-expansion-panel-title>
                         <v-expansion-panel-text class="text-left">
                         <p class="info">Postion : {{ user.position }}</p>
-                        <p class="info ">Departemen t: {{ user.departement }}</p>
+                        <p class="info ">Departement : {{ user.dep }}</p>
                         <p class="info ">Role : {{ user.role }}</p>
                         <p class="info ">Email Address : {{ user.email }}</p>
-                        <p class="info ">Phone Number : {{ user.number}}</p>
-                        <p class="info ">Date of Birth : {{ user.date }}</p>
+                        <p class="info ">Phone Number : {{ user.phoneNumber}}</p>
+                        <p class="info ">Date of Birth : {{ user.birthDate}}</p>
                         </v-expansion-panel-text>
                     </v-expansion-panel>
                     </v-expansion-panels>
@@ -157,7 +165,7 @@
 <script>
     import axios from "axios";
     import LogoComponent from "../../components/LogoComponent.vue";
-    import EmployeeNav from "../../components/navbar/EmployeeNav.vue";
+    import EmployeeNav from "../../components/UserNavBar.vue";
     export default{
         name: "AdminView",
         mounted(){
@@ -188,6 +196,8 @@
             phone:'',
             // fetched data for users list
             userData: [],
+            // search Bar
+            searchedUser: '',
         };
         },
         methods: {
@@ -203,9 +213,13 @@
                     password: this.password,
                     phoneNumber: this.phone
                 };
-                axios.post('http://localhost:8081/edrms/admin/user-management/add', formData)
+                axios.post('http://localhost:8081/edrms/admin/user-management/register', formData,{ 
+                    headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                    } 
+                    })
                     .then(response => {
-                    console.log('Response:', response.data);
+                    console.log(response.data);
                     // Optionally, perform any actions after successful form submission
                     })
                     .catch(error => {
@@ -220,8 +234,6 @@
                     } 
                 })
                 .then(response => {
-                    console.log("this is your data:")
-                    console.log(response.data)
                     this.userData = response.data
                 })
                 .catch(error => {
@@ -238,13 +250,30 @@
                 })
                 .then(response => {
                     console.log(response.data);
-                    //this.userData = this.userData.filter(user => user.id !== userId);
+                    this.userData = this.userData.filter(user => user.id !== userId);
                 })
                 .catch(error => {
                     console.error(error)
                     console.log('error with deleting user')
                 });
             },
+            searchUser(event) {
+                const searchQuery = this.searchedUser.toLowerCase();
+                if (event && event.keyCode === 8) {
+                    this.getUsers();
+                } else {
+                this.userData = this.userData.filter(user => {
+                    return user.firstname.toLowerCase().includes(searchQuery) ||
+                        user.lastname.toLowerCase().includes(searchQuery) ||
+                        user.email.toLowerCase().includes(searchQuery);
+                });
+                }
+            },
+            resetSearch() {
+            // Reset the search query and fetch all user data again
+            this.searchedUser = '';
+            this.getUsers();
+            }
         }
     };
 
@@ -252,14 +281,14 @@
 
 <style scoped>
     .v-container{
-        max-width: 1200px;
+        max-width: 1300px;
         max-height: 800px;
         overflow: hidden;
     }
     .form{
         border-radius: 9px;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        height: 600px;
+        height: 610px;
     }
     .regesiter-btn {
         font-size: 10px;
@@ -270,9 +299,10 @@
       align-items: start;
     }
     .v-expansion-panels {
-      max-height: 700px;
+      max-height: 550px;
       overflow-y: scroll;
       scrollbar-width: none;
+      margin-top: 10px;
       box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
       border-radius: 9px;
       z-index: 0;
@@ -298,6 +328,9 @@
         width: 2px;
         padding: 0;
         margin: 0;
-        color: rgb(121, 11, 11);
+        color: rgb(184, 0, 0);
+    }
+    .info {
+        font-weight: 500;
     }
     </style>
