@@ -9,10 +9,11 @@
             v-model="requestSended"
             label="Request Document"
             variant="outlined"
+            hide-details
+            class="mb-10 text"
         ></v-text-field>
         <v-dialog
            v-model="dialog"
-           max-width="400"
           persistent
         >
         <template v-slot:activator="{ props: activatorProps }">
@@ -149,5 +150,11 @@
       display: flex;
       flex-direction: row;
       align-items: end;
+    }
+    form {
+      background-color: rgb(240, 240, 240);
+    }
+    .text {
+      background: white;
     }
 </style>

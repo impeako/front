@@ -2,7 +2,7 @@
     <LogoComponent/>
     <v-row class="container">
 
-    <v-col cols="4" offset="2" class="form pa-10 mr-10">
+    <v-col cols="3" offset="2" class="form pa-10 mr-10">
         <form @submit.prevent="submit">
                         <h2 class="mb-5 text-left">Add a document</h2>
                         <v-row class="name mt-10">
@@ -40,19 +40,61 @@
                     </form>
     </v-col>
 
-    <v-col cols="4">
-    <v-card
-    class="mx-auto"
-    >
+    <v-col cols="4" class="pa-0 ml-10">
+    <v-card>
         <v-list lines="two">
+            <v-text-field 
+                        v-model="searchedDoc"
+                        label="Search Document"
+                        hide-details
+                        @input="searchDoc"
+                        @keydown.delete="searchDoc($event)"
+                        class="search pa-2"
+                        variant="underlined"
+                        @click:append-inner="resetSearch"
+                        append-inner-icon="mdi-file-search"
+                        >
+                        <template v-slot:append-inner >
+                            <transition name="slide-x-reverse-transition">
+                                <v-icon v-if="searchedDoc !== ''" key="clearIcon" @click="resetSearch">mdi-close-circle</v-icon>
+                            </transition>
+                        </template>
+                    </v-text-field>
         <v-list-subheader>Documents</v-list-subheader>
-        <v-list-item v-for="(document, index) in documents" :key="index" class="text-left">   
-            <p class="doc"> Document id: {{ document.doc_id }}</p>
+        <v-list-item v-for="(document, index) in documents" :key="index" class="text-left">
+            <v-row>
+                <v-col>
+                    <p class="doc"> Document id: {{ document.doc_id }}</p>
+                </v-col>
+                <v-col class="text-right">
+                    <v-btn icon="mdi-delete" variant="plain" color="red" @click="dialog = true"></v-btn>
+                    <v-dialog
+                    v-model="dialog"
+                    width="auto"
+                    >
+                    <v-card
+                        max-width="400"
+                        text="this will delete the document permenatly."
+                        title="Delete this Document?"
+                    >
+                        <template v-slot:actions>
+                        <v-btn @click="dialog = false">
+                            no
+                        </v-btn>
+
+                        <v-btn @click="dialog = false; deleteFile(document.doc_id)">
+                            yes
+                        </v-btn>
+                        </template>
+                    </v-card>
+                    </v-dialog>
+                </v-col>
+            </v-row>
             <p class="doc"> Owner: {{ document.ownerEmail}}</p>
             <p class="doc"> Document type: {{ document.type }}</p>
-            <div class="text-center pa-4">
-                <v-btn @click="openDialog(index)">
-                Open Dialog
+            <div class="text-right pa-4">
+                <v-btn @click="buttonFunction(index, fileDataArray[index].data)" color="#0a66c2">
+                Open file
                 </v-btn>
 
                 <v-dialog
@@ -61,7 +103,7 @@
                 >
                 <v-card>
                 <template v-slot:text>
-                    <img :src="getImageUrl(fileDataArray[index].data)" alt="Image" />
+                    <img :src="getImageUrl(fileDataArray[index].data)" alt="Image"/>
                 </template>
                     <template v-slot:actions>
                     <v-btn
@@ -111,6 +153,8 @@
             file: null,
             fileDataArray: [],
             dialogStates: [],
+            searchedDoc: '',
+            dialog: false,
           }
         },
         methods: {
@@ -137,8 +181,9 @@
                 })
                 .then(response => {
                     const fileArray = response.data.map(doc => doc.fileData);
+                    this.fileDataArray = fileArray;
                     this.documents = response.data;
-                    this.fileDataArray = fileArray
+                    
                 })
                 .catch(error => {
                     console.error(error)
@@ -156,7 +201,7 @@
                     } 
                     })
                     .then(response => {
-                    console.log(response.data);
+                    this.getDocuments();
                     })
                     .catch(error => {
                     console.error('Error:', error);
@@ -171,39 +216,39 @@
             },
 
             getImageUrl(data) {
-                const signature = this.getFileSignature(data);
-                const fileType = this.getFileTypeFromSignature(signature);
+                const fileType = this.getFileTypeFromSignature(data);
                 
                 switch (fileType) {
                     case "image/jpeg":
                     case "image/png":
-                        return `data:${fileType};base64,${data}`;
-                    case "application/pdf":
-                        console.log("pdf")
-                        //return `path-to-pdf-viewer?file=${data}`;
-                        // or
-                        window.open(`data:application/pdf;base64,${data}`, "_blank");
-                        // or
-                        //alert("PDF files cannot be previewed directly. Please download the file.");
-                    
+                        return `data:${fileType};base64,${data}`;                  
                     default:
-                        alert("Unsupported file type!");
                     break;
                 }
             },
-            getFileSignature(fileData) {
-            const signature = this.base64ToHex(fileData.slice(0, 4).toString("hex"));
-            return signature;
+
+            openPDF(data){
+                const binaryData = atob(data);
+
+                        const arrayBuffer = new ArrayBuffer(binaryData.length);
+                        const uint8Array = new Uint8Array(arrayBuffer);
+                        for (let i = 0; i < binaryData.length; i++) {
+                            uint8Array[i] = binaryData.charCodeAt(i);
+                        }
+                        const blob = new Blob([uint8Array], { type: 'application/pdf' });
+                        const url = URL.createObjectURL(blob);
+                        window.open(url);
             },
 
-            getFileTypeFromSignature(signature) {
-            const signatures = {
-                "ffd8ff": "image/jpeg",
-                "89504e": "image/png",
-                "255044": "application/pdf",
-            };
-            const lowerSignature = signature.toLowerCase();
-            return signatures[lowerSignature] || "unknown";
+            getFileTypeFromSignature(fileData) {
+                const signature = this.base64ToHex(fileData.slice(0, 4).toString("hex"));
+                const signatures = {
+                    "ffd8ff": "image/jpeg",
+                    "89504e": "image/png",
+                    "255044": "application/pdf",
+                };
+                const lowerSignature = signature.toLowerCase();
+                return signatures[lowerSignature] || "unknown";
             },
 
             base64ToHex(base64String) {
@@ -216,6 +261,44 @@
                 }
                 return hexString.toUpperCase();
             },
+            searchDoc(event) {
+                const searchQuery = this.searchedDoc.toLowerCase();
+                if (event && event.keyCode === 8) {
+                    this.getDocuments()
+                } else {
+                this.documents = this.documents.filter(doc => {
+                    return doc.ownerEmail.toLowerCase().includes(searchQuery);
+                });
+                }
+            },
+            resetSearch() {
+            this.searchedDoc = '';
+            this.getDocuments();
+            },
+
+            deleteFile(fileId){
+                axios.delete('http://localhost:8081/edrms/hr/documents/delete/'+ fileId ,{ 
+                    headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                    } 
+                })
+                .then(response => {
+                    this.getDocuments();
+                    console.log(response.data)
+                })
+                .catch(error => {
+                    console.error(error);
+                    console.log('error with fetching users');
+                });
+            },
+            buttonFunction(index, data){
+                if(this.getFileTypeFromSignature(data) !== 'application/pdf'){
+                    this.openDialog(index)
+                }
+                else {
+                    this.openPDF(data)
+                }
+            }
         },
     }
 </script>
@@ -224,6 +307,7 @@
     .container{
         max-height: 600px;
         overflow: hidden;
+        padding: 20px;
     }
     .doc{
         font-weight: 500;
@@ -231,7 +315,8 @@
     .form{
         border-radius: 9px;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        max-height: 500;
+        height: 500;
+        background-color: white;
     }
     .form .v-text-field {
         margin-bottom: 20px;

@@ -270,7 +270,6 @@
                 }
             },
             resetSearch() {
-            // Reset the search query and fetch all user data again
             this.searchedUser = '';
             this.getUsers();
             }

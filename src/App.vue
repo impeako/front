@@ -12,7 +12,7 @@
   text-align: center;
   margin: 0;
   padding: 0;
-  background-color: white;
+  background-color: rgb(240, 240, 240);
   height: 100vh;
 }
 </style>
