@@ -19,11 +19,8 @@
           <router-link to="/employee">
           <v-list-item prepend-icon="mdi-account" title="Profile" value="profile" class="icons text-left"></v-list-item>
           </router-link>
-          <router-link to="/employee/request">
-          <v-list-item prepend-icon="mdi-send" title="Request Document" value="request" class="icons text-left"></v-list-item>
-          </router-link>
-          <router-link to="/employee/answers">
-          <v-list-item prepend-icon="mdi-file-document-outline" title="Documents" value="documents" class="icons text-left"></v-list-item>
+          <router-link to="/employee/Documents">
+          <v-list-item prepend-icon="mdi-send" title="documents" value="documents" class="icons text-left"></v-list-item>
           </router-link>
           <router-link to="/employee/assistance">
           <v-list-item prepend-icon="mdi-progress-helper" title="Assistance" value="Assistance" class="icons text-left"></v-list-item>

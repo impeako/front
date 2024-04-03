@@ -1,7 +1,6 @@
 <template>
     <LogoComponent/>
     <v-row class="container">
-
     <v-col cols="3" offset="2" class="form pa-10 mr-10">
         <form @submit.prevent="submit">
                         <h2 class="mb-5 text-left">Add a document</h2>
@@ -24,7 +23,7 @@
                             variant="outlined"
                             hide-details
                             ></v-autocomplete>     
-                            <v-file-input clearable label="Add File" variant="outlined" v-model="file"></v-file-input>
+                            <v-file-input clearable label="Add File" variant="outlined" v-model="file" @change="extractText(this.file[0])"></v-file-input>
                         </v-row>
                         <v-row>
                             <v-btn
@@ -129,6 +128,7 @@
     import LogoComponent from "../../components/LogoComponent.vue";
     import UserNav from "../../components/UserNavBar.vue"
     import axios from "axios";
+    import { createWorker } from 'tesseract.js';
 
     export default{  
         created() {
@@ -155,6 +155,7 @@
             dialogStates: [],
             searchedDoc: '',
             dialog: false,
+            OCRData: '',
           }
         },
         methods: {
@@ -195,6 +196,7 @@
                 formData.append('ownerEmail', this.ownerEmail);
                 formData.append('type', this.type);
                 formData.append('fileData', this.file[0]);
+                formData.append('OCRdata', this.OCRData);
                 axios.post('http://localhost:8081/edrms/hr/documents/add',formData,{
                     headers: {
                     'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
@@ -202,6 +204,7 @@
                     })
                     .then(response => {
                     this.getDocuments();
+                    console.log("added")
                     })
                     .catch(error => {
                     console.error('Error:', error);
@@ -298,6 +301,14 @@
                 else {
                     this.openPDF(data)
                 }
+            },
+            extractText(file){
+                (async () => {
+                const worker = await createWorker('fra');
+                const data = await worker.recognize(file);
+                this.OCRData = data.data.text;
+                await worker.terminate();
+                })();
             }
         },
     }
@@ -315,8 +326,8 @@
     .form{
         border-radius: 9px;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        height: 500;
         background-color: white;
+        max-height: 350px;
     }
     .form .v-text-field {
         margin-bottom: 20px;

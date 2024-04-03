@@ -9,7 +9,7 @@
   >
     <v-card-item>
       <v-avatar color="surface-variant" size="200" class="mb-10">
-        <img alt="profile picture">
+        <img src="../../assets/avatar.jpg" alt="profile picture" width="300px">
       </v-avatar>
       <v-card-title class="mb-5">
         {{this.profile.firstname}} {{this.profile.lastname}}
@@ -22,16 +22,16 @@
           <p class="information">Employee id :</p>
           <p class="information">Department :</p>
           <p class="information">Position :</p>
-          <p class="information">Birth date :</p>
           <p class="information">Email address :</p>
+          <p class="information">Birth date :</p>
           <p class="information">Phone number :</p>
         </v-col>
         <v-col>
           <p class="data">{{this.profile.id}}</p>
           <p class="data">{{this.profile.dep}}</p>
           <p class="data">{{this.profile.position}}</p>
-          <p class="data">{{this.profile.birthDate}}</p>
           <p class="data">{{this.profile.email}}</p>
+          <p class="data">{{this.profile.birthDate}}</p>
           <p class="data">{{this.profile.phoneNumber}}</p>
         </v-col>
     </v-row>

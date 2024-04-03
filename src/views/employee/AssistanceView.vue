@@ -22,9 +22,10 @@
         type="input"
         v-model="message"
         @keyup.enter="sendMessage"
+        append-inner-icon="mdi-arrow-up-box"
+        @click:append-inner="sendMessage"
         >
         </v-text-field>
-        <v-btn icon="mdi-arrow-up-box" @click="sendMessage" class="send-button ml-3" variant="plain"></v-btn>
       </div>
     </v-container>
 
@@ -82,10 +83,7 @@
         flex-direction: column;
         justify-content: end;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    }
-    button {
-        color: black;
-        font-size: 40px;
+        background: white;
     }
     .chat-inputs{
       display: inline-flex;

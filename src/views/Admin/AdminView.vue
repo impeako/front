@@ -4,7 +4,7 @@
             <v-row no-gutters>
                 <v-col cols="6" class="form pa-10 mr-10">
                     <form @submit.prevent="submit">
-                        <h2 class="mb-5">Add Users</h2>
+                        <h2 class="mb-5 text-left">Register User</h2>
                         <v-row class="name mt-10">
                             <v-text-field
                             v-model="firstname"
@@ -13,6 +13,7 @@
                             class="mr-5"
                             hide-details
                             required
+                            focused
                             ></v-text-field>
                             <v-text-field
                             v-model="lastname"
@@ -97,7 +98,7 @@
                         </v-row>
                     </form>
                 </v-col>
-                <v-col class="ml-10">
+                <v-col class="ml-10" cols="4">
                     <v-text-field 
                         v-model="searchedUser"
                         label="Search for User"
@@ -105,7 +106,7 @@
                         @input="searchUser"
                         @keydown.delete="searchUser($event)"
                         class="search"
-                        variant="underlined"
+                        variant="outlined"
                         clearable
                         @clear="resetSearch()"
                         append-inner-icon="mdi-account-search"
@@ -116,7 +117,6 @@
                         <v-expansion-panel-title>
                             <v-row class="title-row">
                                 <h4 class="title">Name : {{ user.firstname }} {{ user.lastname }}</h4>
-                                <p class="id">ID : {{ user.id }}</p>
                                 <v-dialog
                                 v-model="dialog"
                                 max-width="400"
@@ -143,7 +143,51 @@
                                     </v-btn>
                                     </template>
                                 </v-card>
-                                </v-dialog>                                   
+                                </v-dialog>
+                                <div class="text-right">
+                                    <v-dialog
+                                    v-model="dialog2"
+                                    max-width="600"
+                                    >
+                                    <template v-slot:activator="{ props: activatorProps }">
+                                        <v-btn
+                                        class="text-none font-weight-regular"
+                                        prepend-icon="mdi-pencil"
+                                        variant="plain"
+                                        v-bind="activatorProps"
+                                        ></v-btn>
+                                    </template>
+
+                                    <v-card
+                                        prepend-icon="mdi-account"
+                                        title="Edit Profile"
+                                    >
+                                        <v-card-text>
+                                        </v-card-text>
+                                        <v-divider></v-divider>
+
+                                        <v-card-actions>
+                                        <v-spacer></v-spacer>
+
+                                        <v-btn
+                                            text="Close"
+                                            variant="plain"
+                                            @click="dialog2 = false"
+                                        ></v-btn>
+
+                                        <v-btn
+                                            color="primary"
+                                            text="Save"
+                                            variant="tonal"
+                                            @click="dialog2 = false"
+                                        ></v-btn>
+                                        </v-card-actions>
+                                    </v-card>
+                                    </v-dialog>
+                                </div>                                  
+                            </v-row>
+                            <v-row>
+                                <p class="id ma-0">ID : {{ user.id }}</p>
                             </v-row>
                         </v-expansion-panel-title>
                         <v-expansion-panel-text class="text-left">
@@ -183,6 +227,7 @@
             Roles: [
                 "EMPLOYEE", "ADMIN", "HR"
             ],
+            dialog2: false,
             dialog: false,
             // form data
             firstname: '',
@@ -288,6 +333,7 @@
         border-radius: 9px;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         height: 610px;
+        background: white;
     }
     .regesiter-btn {
         font-size: 10px;
@@ -311,7 +357,7 @@
     }
     .title-row{
         width: 100%;
-        justify-content: space-between;
+        justify-content: start;
         margin-top: 10px;
     }
     .title {
@@ -331,5 +377,14 @@
     }
     .info {
         font-weight: 500;
+    }
+    .search{
+        background: white;
+    }
+    .edit{
+        margin: 50px;
+    }
+    .edit .v-text-field {
+        margin-bottom: 20px;
     }
     </style>

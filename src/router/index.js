@@ -1,9 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
-import RequestView from '../views/employee/RequestView.vue'
 import EmployeeView from '../views/employee/EmployeeView.vue'
-import AnswsersView from '../views/employee/AnswersView.vue'
 import AssistanceView from '../views/employee/AssistanceView.vue'
+import EmployeeDocumentsView from '../views/employee/EmployeeDocumentsView.vue'
 import AdminView from '../views/Admin/AdminView.vue'
 import DashboardView from '../views/Admin/DashboardView.vue'
 import HrView from '../views/Hr/HrView.vue'
@@ -26,19 +25,14 @@ const router = createRouter({
       component: EmployeeView,
     },
     {
-      path:'/employee/request',
-      name: 'request',
-      component: RequestView,
-    },
-    {
-      path:'/employee/answers',
-      name: 'answsers',
-      component: AnswsersView,
-    },
-    {
       path:'/employee/assistance',
       name: 'assistance',
       component: AssistanceView,
+    },
+    {
+    path:'/employee/Documents',
+    name: 'EmplyoeeDocuments',
+    component: EmployeeDocumentsView,
     },
     {
       path:'/admin/user-managemnt',
