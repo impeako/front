@@ -10,4 +10,9 @@
     img {
         width: 80%;
     }
+    @media screen and (max-width: 612px) {
+        img {
+            display: none;
+        }
+    }
 </style>

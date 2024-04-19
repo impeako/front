@@ -146,7 +146,7 @@
                                 </v-dialog>
                                 <div class="text-right">
                                     <v-dialog
-                                    v-model="dialog2"
+                                    v-model="user.dialog2"
                                     max-width="600"
                                     >
                                     <template v-slot:activator="{ props: activatorProps }">
@@ -162,7 +162,80 @@
                                         prepend-icon="mdi-account"
                                         title="Edit Profile"
                                     >
-                                        <v-card-text>
+                                        <v-card-text class="edit">
+                                            <form @submit.prevent="submit">
+                                            <v-row class="mt-10">
+                                                <v-text-field
+                                                v-model="edit_firstname"
+                                                placeholder="Enter something"
+                                                label="First Name"
+                                                variant="outlined"
+                                                hide-details
+                                                required
+                                                focused
+                                                ></v-text-field>
+                                                <v-text-field
+                                                v-model="edit_lastname"
+                                                label="Last Name"
+                                                variant="outlined"
+                                                hide-details
+                                                required
+                                                ></v-text-field>
+                                            </v-row>
+                                            <v-row>
+                                                <v-text-field
+                                                v-model="edit_position"
+                                                label="Position"
+                                                variant="outlined"
+                                                hide-details
+                                                required
+                                                ></v-text-field>        
+                                                <v-select
+                                                    v-model="edit_departement"
+                                                    :items="Departements"
+                                                    label="Departement"
+                                                    variant="outlined"
+                                                    required
+                                                    hide-details
+                                                ></v-select>
+                                            </v-row>
+                                            <v-row>
+                                                <v-text-field
+                                                v-model="edit_date"
+                                                label="Date of Birth"
+                                                type="date"
+                                                variant="outlined"
+                                                hide-details
+                                                required
+                                                ></v-text-field>
+                                                <v-select
+                                                    v-model="edit_user_role"
+                                                    :items="Roles"
+                                                    label="User Role"
+                                                    variant="outlined"
+                                                    required
+                                                    hide-details
+                                                ></v-select>
+                                            </v-row>
+                                            <v-row>
+                                                <v-text-field
+                                                v-model="edit_email"
+                                                label="Email Address"
+                                                variant="outlined"
+                                                hide-details
+                                                required
+                                                ></v-text-field>
+                                            </v-row>
+                                            <v-row>
+                                                <v-text-field
+                                                v-model="edit_phone"
+                                                label="Phone Number"
+                                                variant="outlined"
+                                                hide-details
+                                                required
+                                                ></v-text-field>
+                                            </v-row>
+                                        </form>
                                         </v-card-text>
                                         <v-divider></v-divider>
 
@@ -172,14 +245,14 @@
                                         <v-btn
                                             text="Close"
                                             variant="plain"
-                                            @click="dialog2 = false"
+                                            @click="user.dialog2 = false"
                                         ></v-btn>
 
                                         <v-btn
                                             color="primary"
                                             text="Save"
                                             variant="tonal"
-                                            @click="dialog2 = false"
+                                            @click="user.dialog2 = false; editUser(user.id)"
                                         ></v-btn>
                                         </v-card-actions>
                                     </v-card>
@@ -230,6 +303,7 @@
             dialog2: false,
             dialog: false,
             // form data
+            id: '',
             firstname: '',
             lastname: '',
             position:'',
@@ -239,6 +313,15 @@
             email: '',
             password: '',
             phone:'',
+            edit_firstname: '',
+            edit_lastname: '',
+            edit_position:'',
+            edit_departement:'',
+            edit_date: '',
+            edit_user_role:'',
+            edit_email: '',
+            edit_password: '',
+            edit_phone:'',
             // fetched data for users list
             userData: [],
             // search Bar
@@ -317,6 +400,33 @@
             resetSearch() {
             this.searchedUser = '';
             this.getUsers();
+            },
+            editUser(userid){
+                const user = {
+                    id: userid,
+                    firstname: this.firstname,
+                    lastname: this.lastname,
+                    position: this.position,
+                    departement: this.departement,
+                    BirthDate: this.date,
+                    role: this.user_role,
+                    email: this.email,
+                    password: this.password,
+                    phoneNumber: this.phone
+                };
+                axios.post(`http://localhost:8081/edrms/admin/user-management/editUser`, user,
+                {
+                    headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                    } 
+                })
+                .then(response => {
+                    console.log(response.data);
+                })
+                .catch(error => {
+                    console.error(error)
+                    console.log('error with deleting user')
+                });
             }
         }
     };
@@ -385,6 +495,12 @@
         margin: 50px;
     }
     .edit .v-text-field {
-        margin-bottom: 20px;
+        padding: 10px;
+    }
+    @media screen (max-width: 612px) {
+        .container{
+            display: flex;
+            flex-direction: column;
+        }
     }
     </style>

@@ -17,8 +17,8 @@
     </v-card-item>
 
     <v-card-text class="text-left">
-      <v-row>
-        <v-col>
+      <v-row no-gutter class="info-row">
+        <v-col cols="7">
           <p class="information">Employee id :</p>
           <p class="information">Department :</p>
           <p class="information">Position :</p>
@@ -26,7 +26,7 @@
           <p class="information">Birth date :</p>
           <p class="information">Phone number :</p>
         </v-col>
-        <v-col>
+        <v-col cols="5">
           <p class="data">{{this.profile.id}}</p>
           <p class="data">{{this.profile.dep}}</p>
           <p class="data">{{this.profile.position}}</p>
@@ -85,12 +85,28 @@
   .information {
     font-weight: 500;
     font-size: 17px;
-    padding: 5px;
     margin-bottom: 5px;
   }
   .data {
     font-weight: 300;
     font-size: 16px;
     margin-bottom: 16px;
+  }
+  @media screen and (max-width: 612px) {
+     .v-card{
+      width: 90%;
+      margin-top: 15vh;
+     }
+     .information{
+      font-size: 14px;
+     }
+     .data{
+      font-size: 12px;
+      margin-bottom: 6px;
+      white-space: nowrap;
+     }
+     .info-row{
+      margin: 0;
+     }
   }
 </style>

@@ -13,6 +13,7 @@
   margin: 0;
   padding: 0;
   background-color: rgb(245, 245, 245);
-  height: 100vh;
+  min-height: 100vh;
+  height: 100%;
 }
 </style>

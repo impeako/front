@@ -3,29 +3,11 @@
     <v-row class="container">
     <v-col cols="3" offset="2" class="form pa-10 mr-10">
         <form @submit.prevent="submit">
-                        <h2 class="mb-5 text-left">Add a document</h2>
-                        <v-row class="name mt-10">
-                            <v-autocomplete
-                            v-model="ownerEmail"
-                            label="Owner Email"
-                            :items="emails"
-                            required
-                            variant="outlined"
-                            hide-details
-                            ></v-autocomplete>
-                        </v-row>
-                        <v-row>
-                            <v-autocomplete
-                            v-model="type"
-                            label="Type"
-                            :items="typeList"
-                            required
-                            variant="outlined"
-                            hide-details
-                            ></v-autocomplete>     
+                        <h2 class="mb-10 text-left">Add a document</h2>
+                        <v-row> 
                             <v-file-input clearable label="Add File" variant="outlined" v-model="file" @change="extractText(this.file[0])"></v-file-input>
                         </v-row>
-                        <v-row>
+                        <v-row class="addbtn">
                             <v-btn
                             class="addBtn"
                             type="submit"
@@ -39,7 +21,7 @@
                     </form>
     </v-col>
 
-    <v-col cols="4" class="pa-0 ml-10">
+    <v-col cols="4" class="pa-0 ml-10 list">
     <v-card>
         <v-list lines="two">
             <v-text-field 
@@ -337,5 +319,41 @@
         overflow-y: scroll;
         scrollbar-width: none;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+    .addbtn{
+        display: flex;
+        justify-content: end;
+    }
+    @media screen and (max-width: 612px) {
+        .v-row{
+            margin: 0;
+        }
+        .container{
+            width: 100%;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: auto;
+            max-height: 900px;
+        }
+        .v-col-3, .v-col-4{
+            max-width: 90%;
+            margin: 0;
+            padding: 0;
+        }
+        .offset-2 {
+            margin-inline-start: 0;
+        }
+        .ml-10 {
+            margin-left: 0px !important;
+        }
+        .mr-10 {
+        margin-right: 0px !important;
+        }
+        .list{
+            margin-top: 100px;
+            max-height: 350px;
+        }
     }
 </style>

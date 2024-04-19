@@ -42,7 +42,7 @@
         </v-sheet>
     <v-card>
     <v-list lines="two" class="requests text-left">
-      <v-list-subheader>In progress requests</v-list-subheader>
+      <v-list-subheader>Pending requests</v-list-subheader>
 
       <v-list-item v-for="(request, idx) in requests" :key="idx">
         <v-row>
@@ -243,7 +243,7 @@
         width: 1500px;
     }
     .v-list.requests{
-        height:400px;
+        max-height:400px;
         overflow-y: scroll;
         scrollbar-width: none;
     }
@@ -282,5 +282,34 @@
       background-color: #0a66c2;
       color: white;
     }
-    
+    @media screen and (max-width:612px) {
+      .v-container {
+        width: 100%;
+        margin-top: 100px;
+      }
+      .v-container .v-row{
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+      }
+      .v-col-3{
+        max-width: 100%;
+      }
+      .v-card-title{
+        font-size: 17px;
+        font-weight: 400;
+      }
+      .v-card-subtitle{
+        font-size: 10px;
+      }
+      .me-4 {
+        margin-inline-end: 0;
+      }
+      .mb-10 {
+        margin-bottom: 20px !important;
+      }
+      button{
+        margin: 0;
+      }
+    }
 </style>

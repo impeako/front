@@ -104,4 +104,11 @@
     overflow-y: scroll;
     scrollbar-width: none;
     }
+    @media screen and (max-width: 612px) {
+      .container{
+        width: 100%;
+        height: 100vh;
+        padding-top: 100px;
+      }
+    }
   </style>

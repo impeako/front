@@ -4,9 +4,32 @@
       <form @submit.prevent="login">
           <h2>Sign in</h2>
           <div class="container">
-            <input type="text" placeholder="Email" id="Email"  v-model="email" autofocus required>
-            <input type="password" placeholder="Password" id="password" v-model="password" required>
-            <button variant="contained" type="submit">Sign in</button>
+            <v-text-field
+          v-model="email"
+          :readonly="loading"
+          class="mb-2"
+          label="Email"
+          variant="outlined"
+          prepend-inner-icon="mdi-email-outline"
+          @keyup.enter="login"
+          autofocus
+          clearable
+        ></v-text-field>
+
+        <v-text-field
+          v-model="password"
+          :readonly="loading"
+          label="Password"
+          placeholder="Enter your password"
+          :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+          :type="visible ? 'text' : 'password'"
+          prepend-inner-icon="mdi-lock-outline"
+          variant="outlined"
+          @click:append-inner="visible = !visible"
+          @keyup.enter="login"
+          clearable
+        ></v-text-field>
+            <v-btn @click="login" :loading=this.loading >Sign In</v-btn>
           </div>
           <a href="#" class="forgot">Forgot Password?</a>
       </form>
@@ -23,11 +46,14 @@
     data() {
       return {
         email: '',
-        password: ''
+        password: '',
+        loading: false,
+        visible: false,
       };
     },
     methods:{
       login() {
+        this.loading = true;
         const requestBody = {
           email: this.email,
           password: this.password
@@ -46,7 +72,10 @@
           .catch(error => {
             console.error(error);
             console.log('Authentication failed. Please check your credentials.');
-          });
+          })
+          .finally(() => {
+          this.loading = false;
+         });
         }
       }
   };
@@ -71,6 +100,9 @@
         position: absolute;
         bottom:50px;
         width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
       .login h2 {
           text-align: left;
@@ -115,5 +147,13 @@
         margin-left: 30px;
         text-decoration: none;
         font-weight: 500;
+      }
+      .v-text-field{
+        width: 80%;
+      }
+      @media screen and (max-width: 612px) {
+        .login {
+          width: 90%;
+        }
       }
   </style>

@@ -35,7 +35,7 @@ const router = createRouter({
     component: EmployeeDocumentsView,
     },
     {
-      path:'/admin/user-managemnt',
+      path:'/admin/user-management',
       name: 'admin',
       component: AdminView,
       beforeEnter(to){
