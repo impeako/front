@@ -21,9 +21,9 @@
         label="message"
         type="input"
         v-model="message"
-        @keyup.enter="fetchServiceAccountKey"
+        @keyup.enter="sendMessageToDialogflow"
         append-inner-icon="mdi-arrow-up-box"
-        @click:append-inner="fetchServiceAccountKey"
+        @click:append-inner="sendMessageToDialogflow"
         >
         </v-text-field>
       </div>
@@ -52,6 +52,7 @@
     }),
     created() {
           this.sessionId = this.generateSessionId();
+          this.fetchServiceAccountKey();
         },
     methods: {
       generateSessionId(length = 16) {
@@ -65,13 +66,45 @@
           },
           async fetchServiceAccountKey() {
               try {
-                  const response = await axios.get("/api/serviceAccountKey");
-                  console.log(response);
+                  const response = await axios.get("http://localhost:8081/api/serviceAccountKey");
+                  this.serviceAccountKey = response.data;
               } catch (error) {
                   console.error("Error fetching service account key:", error);
                   throw error;
               }
           },
+      async sendMessageToDialogflow() {
+        try {
+          // Construct the URL for the Dialogflow API endpoint
+          const apiUrl = `https://dialogflow.googleapis.com/v2/projects/edrms-lysc/agent/sessions/${this.generateSessionId()}:detectIntent`;
+          const userInput = this.message
+          this.message = ''
+
+          // Construct the request body
+          const requestBody = {
+            queryInput: {
+              text: {
+                text: userInput,
+                languageCode: 'en'
+              }
+            }
+          };
+
+          // Set headers with your Dialogflow service account key
+          const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.serviceAccountKey}`
+          };
+
+          // Send POST request to Dialogflow API
+          const response = await axios.post(apiUrl, requestBody, { headers });
+
+          // Handle response from Dialogflow
+          console.log(response.data); // You can handle the response as per your application's logic
+        } catch (error) {
+          console.error('Error sending message to Dialogflow:', error);
+        }
+      }
     }
   }
   </script>
