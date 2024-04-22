@@ -4,7 +4,7 @@
 
 <style>
 #app {
-  font-family: "Inter", sans-serif;
+  font-family: Plus Jakarta Sans;
   font-weight: 100;
   font-style: normal;
   -webkit-font-smoothing: antialiased;

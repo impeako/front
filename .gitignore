@@ -28,3 +28,6 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+
+API.env
+edrms-lysc-f7a551a0ba63.json

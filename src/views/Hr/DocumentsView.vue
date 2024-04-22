@@ -335,12 +335,15 @@
             flex-direction: column;
             align-items: center;
             height: auto;
-            max-height: 900px;
+            max-height: 100%;
         }
         .v-col-3, .v-col-4{
             max-width: 90%;
             margin: 0;
             padding: 0;
+        }
+        .v-col-3{
+        margin-top: 100px;
         }
         .offset-2 {
             margin-inline-start: 0;

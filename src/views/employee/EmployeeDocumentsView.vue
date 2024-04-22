@@ -78,7 +78,28 @@
         </v-expansion-panel-title>
         <v-expansion-panel-text class="text-left">
           <p class="motion mb-2">Request content: {{ Aanswer.content }}</p>
-          <v-btn class="download mb-3" @click="downloadFile(Aanswer)" prepend-icon="mdi-file-download" color="#0a66c2">Document</v-btn>
+          <div class="d-flex">
+          <v-menu>
+            <template v-slot:activator="{ props }">
+              <v-btn
+                color="primary"
+                v-bind="props"
+              >
+                Document
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item class="down">
+                <v-list-item-title><v-btn class="download mb-3" @click="downloadFile(Aanswer)" prepend-icon="mdi-file-download" variant="plain">Pdf</v-btn></v-list-item-title>
+              </v-list-item>
+            </v-list>
+            <v-list>
+              <v-list-item class="down">
+                <v-list-item-title><v-btn class="download mb-3" @click="downloadFile(Aanswer)" prepend-icon="mdi-file-download" variant="plain">Word</v-btn></v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -115,7 +136,7 @@
 
 <script>
     import LogoComponent from "../../components/LogoComponent.vue";
-    import EmployeeNav from "../../components/UserNavBar.vue"
+    import EmployeeNav from "../../components/UserNavBar.vue";
     import axios from "axios";
 
     export default{
@@ -133,7 +154,8 @@
             requestSended: '',
             requests: [],
             approved : [],
-            denied: [],  
+            denied: [],
+            wordDoc: '',
 
         }),
         methods: {
@@ -233,7 +255,8 @@
               link.download = fileName;
               link.click();
               window.URL.revokeObjectURL(link.href);
-            }
+            },
+
         }
     }
 </script>
@@ -282,6 +305,10 @@
       background-color: #0a66c2;
       color: white;
     }
+    .v-menu > .v-overlay__content > .v-card, .v-menu > .v-overlay__content > .v-sheet, .v-menu > .v-overlay__content > .v-list {
+      border-radius: 0;
+    }
+
     @media screen and (max-width:612px) {
       .v-container {
         width: 100%;

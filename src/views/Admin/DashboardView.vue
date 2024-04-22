@@ -1,6 +1,12 @@
 <template>
     <LogoComponent/>
-    <h1>Dashboard</h1>
+    <v-container>
+        <v-row>
+            <v-col cols="5">
+                <h1>dashboard</h1>
+            </v-col>
+        </v-row>
+    </v-container>
     <EmployeeNav/>
 </template>
 

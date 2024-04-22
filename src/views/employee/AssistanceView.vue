@@ -21,20 +21,21 @@
         label="message"
         type="input"
         v-model="message"
-        @keyup.enter="sendMessage"
+        @keyup.enter="fetchServiceAccountKey"
         append-inner-icon="mdi-arrow-up-box"
-        @click:append-inner="sendMessage"
+        @click:append-inner="fetchServiceAccountKey"
         >
         </v-text-field>
       </div>
     </v-container>
-
     <employeeNav/>
   </template>
   
   <script>
     import LogoComponent from "../../components/LogoComponent.vue";
     import EmployeeNav from "../../components/UserNavBar.vue"
+    import axios from 'axios';
+
   export default {
     components: {
             EmployeeNav,
@@ -43,31 +44,34 @@
     name: 'ChatBox',
     data: () => ({
       message: '',
-      messages: []
+      messages: [],
+      projectId: 'edrms-lysc',
+      sessionId: '',
+      serviceAccountKey: '',
+      queryResult: '',  
     }),
+    created() {
+          this.sessionId = this.generateSessionId();
+        },
     methods: {
-      sendMessage() {
-        const message = this.message
-  
-        this.messages.push({
-          text: message,
-          author: 'client'
-        })
-  
-        this.message = ''
-  
-        this.$axios.get(`https://www.cleverbot.com/getreply?key=CC8uqcCcSO3VsRFvp5-uW5Nxvow&input=${message}`)
-        .then(res => {
-          this.messages.push({
-            text: res.data.output,
-            author: 'server'
-          })
-  
-          this.$nextTick(() => {
-            this.$refs.chatbox.scrollTop = this.$refs.chatbox.scrollHeight
-          })
-        })
-      }
+      generateSessionId(length = 16) {
+            const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            const charactersLength = characters.length;
+            let sessionId = '';
+            for (let i = 0; i < length; i++) {
+              sessionId += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return sessionId;
+          },
+          async fetchServiceAccountKey() {
+              try {
+                  const response = await axios.get("/api/serviceAccountKey");
+                  console.log(response);
+              } catch (error) {
+                  console.error("Error fetching service account key:", error);
+                  throw error;
+              }
+          },
     }
   }
   </script>

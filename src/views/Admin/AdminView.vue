@@ -497,10 +497,32 @@
     .edit .v-text-field {
         padding: 10px;
     }
-    @media screen (max-width: 612px) {
-        .container{
+    @media screen and (max-width: 612px) {
+        .v-container{
             display: flex;
             flex-direction: column;
+            max-height: 100%;
+            width: 100%;
+            overflow: visible;
+            margin-top: 100px;
+        }
+        .v-col-6 {
+            flex: 100%;
+            max-width: 100%;
+        }
+        .form {
+            height: auto;
+        }
+        .ml-10 {
+            margin-left: 0px !important;
+        }
+        .v-col-4 {
+            flex: 100%;
+            max-width: 100%;
+            margin-top: 50px;
+        }
+        .mr-10 {
+            margin-right: 0px !important;
         }
     }
     </style>

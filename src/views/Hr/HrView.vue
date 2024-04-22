@@ -298,10 +298,12 @@
         .v-row + .v-row {
             margin-top: 100px;
             width: 100%;
+            margin-bottom: 100px;
         }
         .v-col-6, .v-col-5 {
             max-width: 100%;
             max-height: 300px;
+            margin-bottom: 100px;
         }
     }
 </style>

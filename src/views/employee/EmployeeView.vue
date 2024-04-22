@@ -52,7 +52,7 @@
         },
         components: {
             EmployeeNav,
-            LogoComponent
+            LogoComponent,
         },
         data() {
           return {
