@@ -277,12 +277,14 @@
             </v-row>
         </v-container>
     <EmployeeNav/>
+    <FooterComponent/>
 </template>
 
 <script>
     import axios from "axios";
     import LogoComponent from "../../components/LogoComponent.vue";
     import EmployeeNav from "../../components/UserNavBar.vue";
+    import FooterComponent from "../../components/FooterComponent.vue";
     export default{
         name: "AdminView",
         mounted(){
@@ -290,7 +292,8 @@
         },
         components: {
             EmployeeNav,
-            LogoComponent
+            LogoComponent,
+            FooterComponent,
         },
         data() {
         return {

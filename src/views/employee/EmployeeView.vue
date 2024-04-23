@@ -37,13 +37,14 @@
     </v-row>
     </v-card-text>
   </v-card>
-
-    <employeeNav/>
+  <FooterComponent/>
+  <employeeNav/>
 </template>
 
 <script>
     import LogoComponent from "../../components/LogoComponent.vue";
     import EmployeeNav from "../../components/UserNavBar.vue"
+    import FooterComponent from "../../components/FooterComponent.vue";
     import axios from "axios";
 
     export default{
@@ -53,6 +54,7 @@
         components: {
             EmployeeNav,
             LogoComponent,
+            FooterComponent,
         },
         data() {
           return {

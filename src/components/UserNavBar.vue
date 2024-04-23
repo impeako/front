@@ -160,7 +160,7 @@
      }
      .topnav{
       display: flex;
-      background: #3388dd;
+      background: #317cc7;
       width: 100%;
       align-items: center;
       position: fixed;

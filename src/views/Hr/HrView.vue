@@ -131,11 +131,13 @@
         
     </v-row>
     <UserNav class="navigation"/>
+    <FooterComponent/>
 </template>
 
 <script>
     import LogoComponent from "../../components/LogoComponent.vue";
     import UserNav from "../../components/UserNavBar.vue"
+    import FooterComponent from "../../components/FooterComponent.vue";
     import axios from "axios";
 
     export default{       
@@ -146,7 +148,8 @@
         },
         components: {
             UserNav,
-            LogoComponent
+            LogoComponent,
+            FooterComponent,
         },
         data() {
           return {

@@ -21,39 +21,43 @@
         label="message"
         type="input"
         v-model="message"
-        @keyup.enter="sendMessageToDialogflow"
+        @keyup.enter="fetchServiceAccountKey"
         append-inner-icon="mdi-arrow-up-box"
-        @click:append-inner="sendMessageToDialogflow"
+        @click:append-inner="fetchServiceAccountKey"
         >
         </v-text-field>
       </div>
     </v-container>
     <employeeNav/>
+    <FooterComponent/>
   </template>
   
   <script>
     import LogoComponent from "../../components/LogoComponent.vue";
     import EmployeeNav from "../../components/UserNavBar.vue"
+    import FooterComponent from "../../components/FooterComponent.vue";
     import axios from 'axios';
 
   export default {
     components: {
             EmployeeNav,
-            LogoComponent
+            LogoComponent,
+            FooterComponent,
         },
     name: 'ChatBox',
     data: () => ({
       message: '',
       messages: [],
-      projectId: 'edrms-lysc',
       sessionId: '',
       serviceAccountKey: '',
       queryResult: '',  
     }),
     created() {
           this.sessionId = this.generateSessionId();
-          this.fetchServiceAccountKey();
         },
+    mounted(){
+      this.fetchServiceAccountKey();
+    },
     methods: {
       generateSessionId(length = 16) {
             const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -73,40 +77,8 @@
                   throw error;
               }
           },
-      async sendMessageToDialogflow() {
-        try {
-          // Construct the URL for the Dialogflow API endpoint
-          const apiUrl = `https://dialogflow.googleapis.com/v2/projects/edrms-lysc/agent/sessions/${this.generateSessionId()}:detectIntent`;
-          const userInput = this.message
-          this.message = ''
-
-          // Construct the request body
-          const requestBody = {
-            queryInput: {
-              text: {
-                text: userInput,
-                languageCode: 'en'
-              }
-            }
-          };
-
-          // Set headers with your Dialogflow service account key
-          const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.serviceAccountKey}`
-          };
-
-          // Send POST request to Dialogflow API
-          const response = await axios.post(apiUrl, requestBody, { headers });
-
-          // Handle response from Dialogflow
-          console.log(response.data); // You can handle the response as per your application's logic
-        } catch (error) {
-          console.error('Error sending message to Dialogflow:', error);
-        }
-      }
+      },
     }
-  }
   </script>
   
   <style scoped>

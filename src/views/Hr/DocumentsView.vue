@@ -102,27 +102,29 @@
     </v-card>
     </v-col>
     </v-row>
-
     <UserNav/>
+    <FooterComponent/>
 </template>
 
 <script>
     import LogoComponent from "../../components/LogoComponent.vue";
     import UserNav from "../../components/UserNavBar.vue"
+    import FooterComponent from "../../components/FooterComponent.vue";
     import axios from "axios";
     import { createWorker } from 'tesseract.js';
 
-    export default{  
+    export default{
         created() {
                 this.dialogStates = new Array(this.documents.length).fill(false);
-            },    
+            },
         mounted(){
             this.getDocuments(),
             this.getUsers()
         },
         components: {
             UserNav,
-            LogoComponent
+            LogoComponent,
+            FooterComponent,
         },
         data() {
           return {
@@ -130,14 +132,14 @@
             typeList: ["Payslips", "Salary statements", "Wage summaries", "Invoices", "Purchase orders", "Receipts", "Expense reports", "Contracts", "Agreements", "Legal notices", "Terms of service", "Employment contracts", "Job descriptions", "Performance reviews", "HR policies and procedures", "Memos", "Announcements", "Newsletters", "Press releases", "Meeting agendas", "Meeting minutes", "Action items", "Presentations", "Training manuals", "Course outlines", "Training schedules", "Compliance reports", "Audit documents", "Regulatory filings", "Travel itineraries", "Travel policies", "Health and safety manuals", "Incident reports", "Emergency procedures", "Quality control reports", "Inspection checklists", "Product specifications", "Customer feedback forms", "Service level agreements", "Customer support scripts", "Project charters", "Project plans", "Status reports", "Gantt charts", "Leave requests", "Expense reimbursement forms", "Employee onboarding forms", "IT policies", "System documentation", "Software licenses", "Maintenance schedules", "Lease agreements", "Facility usage policies"],
             documents: [],
             // form data
-            ownerEmail: '',
-            type: '',
             file: null,
             fileDataArray: [],
             dialogStates: [],
             searchedDoc: '',
             dialog: false,
             OCRData: '',
+            OCREmail:'',
+            OCRType:'',
           }
         },
         methods: {
@@ -165,8 +167,7 @@
                 .then(response => {
                     const fileArray = response.data.map(doc => doc.fileData);
                     this.fileDataArray = fileArray;
-                    this.documents = response.data;
-                    
+                    this.documents = response.data;     
                 })
                 .catch(error => {
                     console.error(error)

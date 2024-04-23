@@ -132,11 +132,13 @@
 </v-container>
     <!-- side nav bar -->
     <EmployeeNav />
+    <FooterComponent/>
 </template>
 
 <script>
     import LogoComponent from "../../components/LogoComponent.vue";
     import EmployeeNav from "../../components/UserNavBar.vue";
+    import FooterComponent from "../../components/FooterComponent.vue";
     import axios from "axios";
 
     export default{
@@ -147,7 +149,8 @@
           },
         components: {
             EmployeeNav,
-            LogoComponent,       
+            LogoComponent,    
+            FooterComponent,   
         },
         data: () => ({
             dialog: false,
