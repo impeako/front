@@ -95,7 +95,7 @@
             </v-list>
             <v-list>
               <v-list-item class="down">
-                <v-list-item-title><v-btn class="download mb-3" @click="downloadFile(Aanswer)" prepend-icon="mdi-file-download" variant="plain">Word</v-btn></v-list-item-title>
+                <v-list-item-title><v-btn class="download mb-3" @click="ConvertWord(Aanswer)" prepend-icon="mdi-file-download" variant="plain">Word</v-btn></v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
