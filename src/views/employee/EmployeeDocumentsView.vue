@@ -95,7 +95,7 @@
             </v-list>
             <v-list>
               <v-list-item class="down">
-                <v-list-item-title><v-btn class="download mb-3" @click="ConvertWord(Aanswer)" prepend-icon="mdi-file-download" variant="plain">Word</v-btn></v-list-item-title>
+                <v-list-item-title><v-btn class="download mb-3" @click="pdfToWord(Aanswer.file.fileData.data)" prepend-icon="mdi-file-download" variant="plain">Word</v-btn></v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -259,7 +259,33 @@
               link.click();
               window.URL.revokeObjectURL(link.href);
             },
-
+            pdfToWord(base64){
+              axios.post('http://localhost:8081/edrms/employee/documents/PdfToWord', {
+                  base64Data: base64
+                }, {
+                  headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                  },
+                  responseType: 'blob' // Receive response as a blob
+                }).then(response => {
+                // Create a blob object from the response data
+                const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+                // Create a link element
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'converted.docx');
+                // Append the link to the body
+                document.body.appendChild(link);
+                // Trigger the download
+                link.click();
+                // Cleanup
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(link);
+              }).catch(error => {
+                console.error('Error downloading DOCX:', error);
+              });
+            },
         }
     }
 </script>

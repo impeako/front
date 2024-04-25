@@ -24,6 +24,7 @@
     "@mdi/font": "^7.4.47",
     "@types/uuid": "^9.0.8",
     "@vitejs/plugin-vue": "^5.0.4",
+    "sass": "^1.75.0",
     "vite": "^5.1.6"
   }
 }

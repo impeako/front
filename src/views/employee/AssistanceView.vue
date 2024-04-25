@@ -21,9 +21,9 @@
         label="message"
         type="input"
         v-model="message"
-        @keyup.enter="fetchServiceAccountKey"
+        @keyup.enter="sendToChat"
         append-inner-icon="mdi-arrow-up-box"
-        @click:append-inner="fetchServiceAccountKey"
+        @click:append-inner="sendToChat"
         >
         </v-text-field>
       </div>
@@ -55,33 +55,52 @@
     created() {
           this.sessionId = this.generateSessionId();
         },
-    mounted(){
-      this.fetchServiceAccountKey();
-    },
     methods: {
       generateSessionId(length = 16) {
-            const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            const charactersLength = characters.length;
-            let sessionId = '';
-            for (let i = 0; i < length; i++) {
-              sessionId += characters.charAt(Math.floor(Math.random() * charactersLength));
-            }
-            return sessionId;
-          },
-          async fetchServiceAccountKey() {
-              try {
-                  const response = await axios.get("http://localhost:8081/api/serviceAccountKey");
-                  this.serviceAccountKey = response.data;
-              } catch (error) {
-                  console.error("Error fetching service account key:", error);
-                  throw error;
-              }
-          },
+          const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+          const charactersLength = characters.length;
+          let sessionId = '';
+          for (let i = 0; i < length; i++) {
+            sessionId += characters.charAt(Math.floor(Math.random() * charactersLength));
+          }
+        return sessionId;
       },
-    }
+      sendToChat(){
+        const querymsg = this.message
+        this.messages.push({
+        text: querymsg,
+        author: 'client'
+      })
+        this.message = ''
+        const URL = 'https://console.dialogflow.com/v1/integrations/messenger/webhook/6f206d09-b1ca-4f31-9a0e-c1fdb7a7b825/sessions/'+this.sessionId+'?platform=webdemo';
+        const requestBody = {
+          queryInput: {
+            text: {
+              text: querymsg,
+              languageCode: 'en',
+            },
+          },
+        };
+        axios.post(URL,requestBody)
+          .then(response=> {
+                    const res = JSON.parse(response.data.substring(4));
+                    this.message = res.queryResult.fulfillmentText
+                    this.messages.push({
+                      text: this.message,
+                      author: 'server'
+                    })
+                    this.message = ''
+          })
+          .catch(error => {
+                    console.error(error)
+                    console.log('error with fetching user information')
+          });
+      }
+    },
+  }
   </script>
   
-  <style scoped>
+  <style scoped lang="scss">
     .container {
         width: 1200px;
         border-radius: 9px;
