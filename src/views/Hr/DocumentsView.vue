@@ -3,7 +3,27 @@
     <v-row class="container">
     <v-col cols="3" offset="2" class="form pa-10 mr-10">
         <form @submit.prevent="submit">
-                        <h2 class="mb-10 text-left">Add a document</h2>
+            <h2 class="mb-10 text-left">Add a document</h2>
+                            <v-row class="name mt-10">
+                            <v-autocomplete
+                            v-model="OCREmail"
+                            label="Owner Email"
+                            :items="emails"
+                            required
+                            variant="outlined"
+                            hide-details
+                            ></v-autocomplete>
+                        </v-row>
+                        <v-row>
+                            <v-autocomplete
+                            v-model="OCRType"
+                            label="Type"
+                            :items="typeList"
+                            required
+                            variant="outlined"
+                            hide-details
+                            ></v-autocomplete>
+                        </v-row>   
                         <v-row> 
                             <v-file-input clearable label="Add File" variant="outlined" v-model="file" @change="extractText(this.file[0])"></v-file-input>
                         </v-row>
@@ -176,8 +196,8 @@
             },
             addDoc() {
                 const formData = new FormData();
-                formData.append('ownerEmail', this.ownerEmail);
-                formData.append('type', this.type);
+                formData.append('ownerEmail', this.OCREmail);
+                formData.append('type', this.OCRType);
                 formData.append('fileData', this.file[0]);
                 formData.append('OCRdata', this.OCRData);
                 axios.post('http://localhost:8081/edrms/hr/documents/add',formData,{
@@ -284,7 +304,7 @@
                 else {
                     this.openPDF(data)
                 }
-            },
+            },           
             extractText(file){
                 (async () => {
                 const worker = await createWorker('fra');
@@ -292,7 +312,7 @@
                 this.OCRData = data.data.text;
                 await worker.terminate();
                 })();
-            }
+            },
         },
     }
 </script>
@@ -310,7 +330,7 @@
         border-radius: 9px;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         background-color: white;
-        max-height: 350px;
+        max-height: 400px;
     }
     .form .v-text-field {
         margin-bottom: 20px;

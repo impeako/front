@@ -24,10 +24,18 @@
         @keyup.enter="sendToChat"
         append-inner-icon="mdi-arrow-up-box"
         @click:append-inner="sendToChat"
+        required
         >
         </v-text-field>
       </div>
     </v-container>
+    <df-messenger
+            chat-icon="https:&#x2F;&#x2F;cdn-icons-png.flaticon.com&#x2F;512&#x2F;4298&#x2F;4298373.png"
+            intent="WELCOME"
+            chat-title="EDRMS"
+            agent-id="6f206d09-b1ca-4f31-9a0e-c1fdb7a7b825"
+            language-code="en"
+        ></df-messenger>
     <employeeNav/>
     <FooterComponent/>
   </template>
@@ -66,42 +74,44 @@
         return sessionId;
       },
       sendToChat(){
-        const querymsg = this.message
-        this.messages.push({
-        text: querymsg,
-        author: 'client'
-      })
-        this.message = ''
-        const URL = 'https://console.dialogflow.com/v1/integrations/messenger/webhook/6f206d09-b1ca-4f31-9a0e-c1fdb7a7b825/sessions/'+this.sessionId+'?platform=webdemo';
-        const requestBody = {
-          queryInput: {
-            text: {
-              text: querymsg,
-              languageCode: 'en',
-            },
-          },
-        };
-        axios.post(URL,requestBody)
-          .then(response=> {
-                    const res = JSON.parse(response.data.substring(4));
-                    this.message = res.queryResult.fulfillmentText
-                    this.messages.push({
-                      text: this.message,
-                      author: 'server'
-                    })
-                    this.message = ''
+        if(this.message !== ""){
+          const querymsg = this.message
+          this.messages.push({
+            text: querymsg,
+            author: 'client'
           })
-          .catch(error => {
-                    console.error(error)
-                    console.log('error with fetching user information')
-          });
-      }
+          this.message = ''
+          const URL = 'https://console.dialogflow.com/v1/integrations/messenger/webhook/6f206d09-b1ca-4f31-9a0e-c1fdb7a7b825/sessions/'+this.sessionId+'?platform=webdemo';
+          const requestBody = {
+            queryInput: {
+              text: {
+                text: querymsg,
+                languageCode: 'en',
+              },
+            },
+          };
+          axios.post(URL,requestBody)
+            .then(response=> {
+                      const res = JSON.parse(response.data.substring(4));
+                      this.message = res.queryResult.fulfillmentText
+                      this.messages.push({
+                        text: this.message,
+                        author: 'server'
+                      })
+                      this.message = ''
+            })
+            .catch(error => {
+                      console.error(error)
+                      console.log('error with fetching user information')
+            });
+        }
+      },
     },
   }
   </script>
   
-  <style scoped lang="scss">
-    .container {
+<style scoped lang="scss">
+  .container {
         width: 1200px;
         border-radius: 9px;
         padding: 40px;
@@ -112,6 +122,7 @@
         justify-content: end;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         background: white;
+        font-size: 14px;
     }
     .chat-inputs{
       display: inline-flex;
@@ -119,19 +130,39 @@
     }
     li{
         display: block;
-        width: fit-content;
+        width: 100%;
         list-style: none;
         padding: 10px;
-        margin: 10px;
-        background-color: rgb(50, 129, 194);
+        margin-top: 40px;
         color: white;
         border-radius: 9px;
-        max-width: 700px;
     }
     .chat-box-list-container{
-    overflow-y: scroll;
-    scrollbar-width: none;
+      height: 100%;
+      overflow-y: scroll;
+      scrollbar-width: none;
     }
+    .server {
+      p {
+        float: right;
+        text-align: right;
+        background: #a0a0a0;
+        padding: 12px;
+        border-radius: 15px;
+        max-width: 500px;
+      }
+    }
+
+  .client {
+    p {
+      float: left;
+      text-align: left;
+      background: rgb(50, 129, 194);
+      padding: 12px;
+      border-radius: 15px;
+      max-width: 500px;
+    }
+  }
     @media screen and (max-width: 612px) {
       .container{
         width: 100%;
@@ -139,4 +170,4 @@
         padding-top: 100px;
       }
     }
-  </style>
+</style>

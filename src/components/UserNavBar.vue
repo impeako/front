@@ -48,7 +48,7 @@
         expand-on-hover
         rail>
         <v-list>
-          <v-list-item prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
+          <v-list-item :prepend-avatar="avatarSrc"
             class="text-left">
             <v-list-item-subtitle>{{ profile.email }}</v-list-item-subtitle>
             <v-list-item-title>{{ profile.firstname }} {{ profile.lastname }}</v-list-item-title>
@@ -99,6 +99,15 @@
     mounted() {
       this.getProfile();
     },
+    computed: {
+          avatarSrc() {
+            if (this.profile.avatar && this.profile.avatar.data) {
+              return `data:image/jpeg;base64,${this.profile.avatar.data}`;
+            } else {
+              return '../assets/avatar.jpg';
+            }
+          }
+        },
     data: () => ({
       role: localStorage.getItem("userRole"),
       profile : {},
@@ -129,8 +138,6 @@
                   useTokenStore().clearToken();
                   localStorage.removeItem('authToken');
                   localStorage.removeItem('userRole');
-                  console.log(response.data);
-                  console.log("you have logged out !");
                 })
                 .catch(error => {
                     console.error(error)

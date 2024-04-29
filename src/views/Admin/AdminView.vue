@@ -64,6 +64,7 @@
                             <v-text-field
                             v-model="email"
                             label="Email Address"
+                            placeholder="example@gmail.com"
                             variant="outlined"
                             hide-details
                             required
@@ -155,6 +156,7 @@
                                         prepend-icon="mdi-pencil"
                                         variant="plain"
                                         v-bind="activatorProps"
+                                        @click="initializeEdit(user)"
                                         ></v-btn>
                                     </template>
 
@@ -167,7 +169,6 @@
                                             <v-row class="mt-10">
                                                 <v-text-field
                                                 v-model="edit_firstname"
-                                                placeholder="Enter something"
                                                 label="First Name"
                                                 variant="outlined"
                                                 hide-details
@@ -221,6 +222,7 @@
                                                 <v-text-field
                                                 v-model="edit_email"
                                                 label="Email Address"
+                                                placeholder="example@gmail.com"
                                                 variant="outlined"
                                                 hide-details
                                                 required
@@ -323,7 +325,6 @@
             edit_date: '',
             edit_user_role:'',
             edit_email: '',
-            edit_password: '',
             edit_phone:'',
             // fetched data for users list
             userData: [],
@@ -350,8 +351,17 @@
                     } 
                     })
                     .then(response => {
-                    console.log(response.data);
-                    // Optionally, perform any actions after successful form submission
+                        this.getUsers();
+                        this.id = ''
+                        this.firstname= ''
+                        this.lastname= ''
+                        this.position=''
+                        this.departement=''
+                        this.date=''
+                        this.user_role=''
+                        this.email=''
+                        this.password=''
+                        this.phone=''
                     })
                     .catch(error => {
                     console.error('Error:', error);
@@ -407,15 +417,15 @@
             editUser(userid){
                 const user = {
                     id: userid,
-                    firstname: this.firstname,
-                    lastname: this.lastname,
-                    position: this.position,
-                    departement: this.departement,
-                    BirthDate: this.date,
-                    role: this.user_role,
-                    email: this.email,
-                    password: this.password,
-                    phoneNumber: this.phone
+                    firstname: this.edit_firstname,
+                    lastname: this.edit_lastname,
+                    position: this.edit_position,
+                    dep: this.edit_departement,
+                    birthDate: this.edit_date,
+                    role: this.edit_user_role,
+                    email: this.edit_email,
+                    password: this.edit_password,
+                    phoneNumber: this.edit_phone
                 };
                 axios.post(`http://localhost:8081/edrms/admin/user-management/editUser`, user,
                 {
@@ -424,13 +434,24 @@
                     } 
                 })
                 .then(response => {
-                    console.log(response.data);
+                    this.getUsers();
+                    console.log(response.data)
                 })
                 .catch(error => {
                     console.error(error)
-                    console.log('error with deleting user')
+                    console.log('error with editing user')
                 });
-            }
+            },
+            initializeEdit(user){
+                this.edit_firstname = user.firstname
+                this.edit_lastname = user.lastname
+                this.edit_position = user.position
+                this.edit_departement = user.dep
+                this.edit_date = user.birthDate
+                this.edit_user_role = user.role
+                this.edit_email = user.email
+                this.edit_phone = user.phoneNumber
+            },
         }
     };
 

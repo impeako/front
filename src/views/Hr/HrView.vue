@@ -42,11 +42,12 @@
                             variant="underlined"
                             hide-details
                             class="mt-5"
-                            @click="findOwner(this.docId)"
+                            @click="GetEmployeeDocuments(n.sender.email)"
                             ></v-autocomplete>
                             <div v-if="this.docId !== ''">
-                                <h5>Owner:</h5>
-                                <p v-if="this.owner">first name: {{ this.owner.firstname }} {{ this.owner.lastname }}</p>
+                                <h5 class="mt-5 mb-2">Document information: </h5>
+                                <p class="mb-2"><b>owner: </b>{{ this.docInfo.owner.firstname }} {{ this.docInfo.owner.lastname }}</p>
+                                <p><b>type:</b> {{ this.docInfo.type }}</p>
                             </div>
                         </v-card-text>
                         <template v-slot:actions>
@@ -130,7 +131,7 @@
         </v-col>
         
     </v-row>
-    <UserNav class="navigation"/>
+    <UserNav/>
     <FooterComponent/>
 </template>
 
@@ -151,6 +152,13 @@
             LogoComponent,
             FooterComponent,
         },
+        watch: {
+            docId(newVal, oldVal) {
+                if (newVal !== oldVal) {
+                    this.findDocInfo(newVal);
+                }
+            }
+        },
         data() {
           return {
             treated : [],
@@ -161,8 +169,8 @@
             idArray:[],
             fileDataArray: [],
             documents: [],
-            owner: {},
             motion: '',
+            docInfo: '',
           }
         },
         methods: {
@@ -200,11 +208,27 @@
                     } 
                 })
                 .then(response => {
-                    const Array = response.data.map(doc => doc.doc_id);
-                    this.idArray = Array;
                     const fileArray = response.data.map(doc => doc.fileData);
                     this.fileDataArray = fileArray;
-                    this.documents = response.data;   
+                    this.documents = response.data;  
+                })
+                .catch(error => {
+                    console.error(error)
+                    console.log('error with fetching documents')
+                });
+            },
+            GetEmployeeDocuments(EmployeeEmail){
+                axios.get('http://localhost:8081/edrms/hr/documents/AllByEmployee',{
+                    params: {
+                        email: EmployeeEmail
+                    },
+                    headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                    } 
+                })
+                .then(response => {
+                    const Array = response.data.map(doc => doc.doc_id);
+                    this.idArray = Array;
                 })
                 .catch(error => {
                     console.error(error)
@@ -221,13 +245,15 @@
                     } 
                 })
                 .then(response => {
-                    console.log(response.data)
+                    this.getTreated();
+                    this.getNew();
+                    this.getDocuments();
                 })
                 .catch(error => {
                     console.error('Error approving request:', error);
                 });
-                },  
-                deny(Id, motion) {
+            },  
+            deny(Id, motion) {
                     const formData = new FormData();
                     formData.append('reqId', Id);
                     formData.append('motion', motion);
@@ -237,18 +263,33 @@
                     }
                 })
                 .then(response => {
-                    this.getNew();
                     this.getTreated();
-                    console.log(response.data)
+                    this.getNew();
+                    this.getDocuments();
                 })
                 .catch(error => {
                     console.error('Error denying request:', error);
                 });
-                },
-                findOwner(doc_id) {
-                    const document = this.documents.find(doc => doc.doc_id === doc_id);
-                    this.owner = document ? document.owner : null;
-                },
+            },
+            findDocInfo(doc){
+                if(this.docId){
+                    axios.get('http://localhost:8081/edrms/hr/documents/getDoc',{
+                        params: {
+                            id: doc
+                        },
+                        headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                        } 
+                    })
+                    .then(response => {
+                        this.docInfo = response.data
+                    })
+                    .catch(error => {
+                        console.error(error)
+                        console.log('error with finding the document')
+                    });
+                }
+            },
         }
     }
 </script>
@@ -257,9 +298,6 @@
     .container {
         width: 1200px;
         margin: auto;
-    }
-    .navigation{
-        z-index: 2;
     }
     .v-expansion-panel-title{
       display: flexbox;

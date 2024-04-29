@@ -7,13 +7,18 @@
                     <canvas id="RequestFrequency"></canvas>
             </v-col>
             <v-col cols="5" class="text-left">
-                    <h2 class="pb-5">Average response time: {{ this.averageResponseTime }}</h2>
+                    <h2 class="pb-5">Average response time: {{ this.averageResponseTime }} m</h2>
                     <canvas id="responseTimeChart"></canvas>
             </v-col>
         </v-row>
         <v-row>
             <v-col cols="5">
+                <h2 class="pb-5 text-left">Most requested documents:</h2>
                 <canvas ref="doughnutChart"></canvas>
+            </v-col>
+            <v-col cols="5">
+                <h2 class="pb-5 text-left">Most requested documents:</h2>
+                <canvas ref="polarAreaChart"></canvas>
             </v-col>
         </v-row>
     </v-container>
@@ -36,6 +41,7 @@
         data: () => ({
             requestNumber: 0,
             averageResponseTime: null,
+            typesArray: [],
         }),
         mounted() {
             this.getRequestData();
@@ -51,18 +57,21 @@
                     'Authorization': 'Bearer ' + localStorage.getItem('authToken')
                     } 
                 });
-                const data = response.data; // Assuming your response is an array of documents
+                const data = response.data; 
                 this.requestNumber = data.length
                 const formattedData = this.requestformatData(data);
                 this.createBarChart(formattedData);
+                data.forEach(doc => {
+                        this.typesArray.push(doc.docType);
+                    });
+                console.log(this.typesArray)
+                this.createPolarChart();
             } catch (error) {
                 console.error('Error fetching data from MongoDB:', error);
             }
             },
             requestformatData(data) {
-                const monthCounts = {}; // Object to store counts for each month
-
-                // Iterate over each document in the data array
+                const monthCounts = {}; 
                 data.forEach(doc => {
                     const date = new Date(doc.sendingDate);
                     const monthKey = date.toLocaleString('en-US', { month: 'long' });
@@ -227,8 +236,7 @@
                 },
                 options: {
                 responsive: true,
-                maintainAspectRatio: false,
-                aspectRatio: 1,
+                aspectRatio: 1.5,
                 plugins: {
                     legend: {
                     position: 'top'
@@ -237,12 +245,78 @@
                 }
             });
         },
-    }
+
+        //fourth chart
+        createPolarChart() {
+
+            const data = this.countTypes(this.typesArray)
+            // Extract labels and data values from the provided array
+            const labels = data.map(item => item.word);
+            const counts = data.map(item => item.count);
+            console.log(data)
+
+            // Create the Chart.js configuration object
+            const chartData = {
+            labels: labels,
+            datasets: [{
+                data: counts,
+                backgroundColor: [
+                'rgba(255, 99, 132, 0.5)',
+                'rgba(54, 162, 235, 0.5)',
+                'rgba(255, 206, 86, 0.5)',
+                'rgba(75, 192, 192, 0.5)',
+                // Add more colors if needed
+                ],
+                borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                // Add more colors if needed
+                ],
+                borderWidth: 1
+            }]
+            };
+
+            // Get the canvas element using the ref attribute
+            const canvas = this.$refs.polarAreaChart;
+
+            // Ensure canvas exists before attempting to get context
+            if (canvas) {
+            const ctx = canvas.getContext('2d');
+
+            // Create the polar area chart
+            new Chart(ctx, {
+                type: 'polarArea',
+                data: chartData,
+                options: {
+                    aspectRatio: 1.5,
+                }
+            });
+            } else {
+            console.error('Canvas element not found');
+            }
+        },
+        countTypes(words) {
+            const wordCounts = {};
+            
+            // Count occurrences of each word
+            words.forEach(word => {
+                wordCounts[word] = (wordCounts[word] || 0) + 1;
+            });
+            
+            // Convert wordCounts object to an array of { word, count }
+            const wordCountArray = Object.keys(wordCounts).map(word => ({ word, count: wordCounts[word] }));
+
+            return wordCountArray;
+        },
+  },
 }
 </script>
 <style scoped>
     .v-container{
         width: 1600px;
+        margin-bottom: 150px;
     }
     .v-row{
         justify-content: space-between;

@@ -9,12 +9,21 @@
         <v-form @submit.prevent class="text-right">       
         <v-textarea
             v-model="requestSended"
-            label="Request Document"
+            label="Your request motion"
             variant="outlined"
             hide-details
             class="mb-10 text"
             >
         </v-textarea>
+        <v-row>
+        <v-autocomplete
+          v-model="requestedType"
+          label="Document Type"
+          :items="typeList"
+          required
+          variant="solo"
+          hide-details
+        ></v-autocomplete>
         <v-dialog
            v-model="dialog"
           persistent
@@ -27,6 +36,10 @@
         max-width="400px"
         class="mx-auto"
         >
+        <v-card-text>
+          <p><b>requested document:</b>{{ this.requestedType }}</p>
+          <p><b>request motion:</b>{{ this.requestSended }}</p>
+        </v-card-text>
         <template v-slot:actions>
         <v-spacer></v-spacer>
         <v-btn @click="dialog = false; ">
@@ -38,12 +51,13 @@
         </template>
         </v-card>
         </v-dialog>
+      </v-row>
         </v-form>
         </v-sheet>
     <v-card>
     <v-list lines="two" class="requests text-left">
-      <v-list-subheader>Pending requests</v-list-subheader>
-
+      <v-list-subheader>Pending requests</v-list-subheader>   
+      <p v-if="requests.length === 0" class="ml-5">You have no pending requests!</p>
       <v-list-item v-for="(request, idx) in requests" :key="idx">
         <v-row>
         <v-col cols="1">
@@ -67,7 +81,7 @@
             Approved Requests
             <v-icon icon="mdi-check" size="x-small" color="green"></v-icon>
         </v-card-title>
-        <v-card-subtitle class="text-left mb-3">
+        <v-card-subtitle class="text-left mb-3" v-if="approved.length === 0">
             You have no approved requests yet!     
         </v-card-subtitle>
     <v-expansion-panels variant="accordion">
@@ -95,7 +109,7 @@
             </v-list>
             <v-list>
               <v-list-item class="down">
-                <v-list-item-title><v-btn class="download mb-3" @click="pdfToWord(Aanswer.file.fileData.data)" prepend-icon="mdi-file-download" variant="plain">Word</v-btn></v-list-item-title>
+                <v-list-item-title><v-btn class="download mb-3" @click="pdfToImage(Aanswer.file.fileData.data)" prepend-icon="mdi-file-download" variant="plain">Word</v-btn></v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -111,18 +125,18 @@
                 Denied Requests
                 <v-icon icon="mdi-cancel" size="x-small" color="red"></v-icon>
             </v-card-title>
-            <v-card-subtitle class="text-left mb-3">
+            <v-card-subtitle class="text-left mb-3" v-if="denied.length === 0">
               You have no denied requests yet!     
             </v-card-subtitle>
         <v-expansion-panels variant="accordion">
         <v-expansion-panel v-for="(answer, index) in denied" :key="index">
             <v-expansion-panel-title>
-            <h4 class="title">Request id: {{ answer.id }}</h4>
-            <p class="date">Treatement date: {{ answer.treatmentDate }}</p>
+            <h4 class="title"><b>Request id: </b>{{ answer.id }}</h4>
+            <p class="date"><b>Treatement date: </b>{{ answer.treatmentDate }}</p>
             </v-expansion-panel-title>
             <v-expansion-panel-text class="text-left">
-            <p class="motion mb-2">Request content: {{ answer.content }}</p>
-            <p class="motion ">motion: {{ answer.motion }}</p>
+            <p class="motion mb-2"><b>Request content : </b> {{ answer.content }}</p>
+            <p class="motion "><b>Denial motion : </b> {{ answer.motion }}</p>
             </v-expansion-panel-text>
         </v-expansion-panel>
         </v-expansion-panels>
@@ -159,27 +173,25 @@
             approved : [],
             denied: [],
             wordDoc: '',
-
+            typeList: ["Payslips", "Salary statements", "Wage summaries", "Invoices", "Purchase orders", "Receipts", "Expense reports", "Contracts", "Agreements", "Legal notices", "Terms of service", "Employment contracts", "Job descriptions", "Performance reviews", "HR policies and procedures", "Memos", "Announcements", "Newsletters", "Press releases", "Meeting agendas", "Meeting minutes", "Action items", "Presentations", "Training manuals", "Course outlines", "Training schedules", "Compliance reports", "Audit documents", "Regulatory filings", "Travel itineraries", "Travel policies", "Health and safety manuals", "Incident reports", "Emergency procedures", "Quality control reports", "Inspection checklists", "Product specifications", "Customer feedback forms", "Service level agreements", "Customer support scripts", "Project charters", "Project plans", "Status reports", "Gantt charts", "Leave requests", "Expense reimbursement forms", "Employee onboarding forms", "IT policies", "System documentation", "Software licenses", "Maintenance schedules", "Lease agreements", "Facility usage policies"],
+            requestedType: '',
         }),
         methods: {
           sendRequest(){
-            const parameter = this.requestSended;
-            axios.post('http://localhost:8081/edrms/employee/request/req-doc', 
-                  {
-                      content: parameter
-                  },
-                  { 
-                    headers: {'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
-                              'Content-Type': 'application/json'
-                            } 
-                    })
+            const formData = new FormData();
+            formData.append('content', this.requestSended);
+            formData.append('type', this.requestedType);
+            axios.post('http://localhost:8081/edrms/employee/request/req-doc', formData,{
+                    headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+                    }})
                 .then(response => {
                     this.getRequests();
                     this.requestSended = '';
                 })
                 .catch(error => {
                     console.error(error)
-                    console.log('error with sending request', parameter)
+                    console.log('error with sending request')
                 });
           },
           getRequests(){
@@ -286,6 +298,22 @@
                 console.error('Error downloading DOCX:', error);
               });
             },
+            pdfToImage(pdf){
+              const request = {
+                "base64Pdf" : pdf
+              }
+              axios.post('http://localhost:8081/edrms/employee/convert/pdf-to-images',request ,{
+                    headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+                    }})
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(error => {
+                    console.error(error)
+                    console.log('error with converting file')
+                });
+            },
         }
     }
 </script>
@@ -337,7 +365,18 @@
     .v-menu > .v-overlay__content > .v-card, .v-menu > .v-overlay__content > .v-sheet, .v-menu > .v-overlay__content > .v-list {
       border-radius: 0;
     }
-
+    .v-autocomplete{
+      background-color: white;
+      max-width: 400px;
+      margin-bottom: 80px;
+      margin-right: 20px;
+      margin-left: 20px;
+    }
+    .v-list-subheader{
+      font-weight: 500;
+      font-size: 18px;
+      color: black;
+    }
     @media screen and (max-width:612px) {
       .v-container {
         width: 100%;
