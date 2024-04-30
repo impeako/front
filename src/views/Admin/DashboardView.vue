@@ -1,7 +1,7 @@
 <template>
     <LogoComponent/>
     <v-container>
-        <v-row>
+        <v-row class="mb-10">
             <v-col cols="5" class="text-left">
                     <h2 class="pb-5">Total requests number: {{ this.requestNumber }}</h2>
                     <canvas id="RequestFrequency"></canvas>
@@ -12,13 +12,17 @@
             </v-col>
         </v-row>
         <v-row>
-            <v-col cols="5">
+            <v-col cols="4">
                 <h2 class="pb-5 text-left">Most requested documents:</h2>
                 <canvas ref="doughnutChart"></canvas>
             </v-col>
-            <v-col cols="5">
+            <v-col cols="4">
                 <h2 class="pb-5 text-left">Most requested documents:</h2>
                 <canvas ref="polarAreaChart"></canvas>
+            </v-col>
+            <v-col cols="4">
+                <h2 class="pb-5 text-left">Users count: {{ this.totalUsers }}</h2>
+                <canvas ref="employeescount"></canvas>
             </v-col>
         </v-row>
     </v-container>
@@ -42,11 +46,13 @@
             requestNumber: 0,
             averageResponseTime: null,
             typesArray: [],
+            totalUsers: null,
         }),
         mounted() {
             this.getRequestData();
             this.getAnswersData();
             this.fetchDataAndCreateChart();
+            this.usersCountdata();
         },
         methods: {
             // first chart
@@ -169,7 +175,7 @@
                         }),
                         borderColor: 'rgba(54, 162, 235, 1)',
                         backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderWidth: 1,
+                        borderWidth: 2,
                         fill: true
                     }]
                     },
@@ -310,6 +316,63 @@
 
             return wordCountArray;
         },
+
+        //fifth chart
+        async usersCountdata() {
+            try {
+                const response = await axios.get('http://localhost:8081/edrms/admin/user-management/getAllEmployees', {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                }
+                });
+                const employees = response.data; // Assuming the data returned is an array of answers
+                this.totalUsers = employees.length
+                const RolesCounts = this.calculateRoles(employees);
+                this.employeesChart(RolesCounts);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+            },
+            calculateRoles(employees) {
+            let hrcount = 0;
+            let admincount = 0;
+            let employeecount = 0;
+            employees.forEach(employeee => {
+                if (employeee.role === 'EMPLOYEE') {
+                employeecount++;
+                } else if (employeee.role === 'HR') {
+                hrcount++;
+                }  else if (employeee.role === 'ADMIN') {
+                admincount++;
+                } 
+            });
+            return { hr: hrcount, admin: admincount, employee: employeecount };
+        },
+        employeesChart(Employees){
+            const ctx = this.$refs.employeescount.getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                labels: ['HR', 'Admin', 'Employee'],
+                datasets: [{
+                    label: 'count',
+                    data: [Employees.hr, Employees.admin, Employees.employee],
+                    backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)', 'rgba(133, 122, 120, 0.8)'],
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
+                    borderWidth: 1
+                }]
+                },
+                options: {
+                responsive: true,
+                aspectRatio: 1.5,
+                plugins: {
+                    legend: {
+                    position: 'top'
+                    }
+                }
+                }
+            });
+        }
   },
 }
 </script>
