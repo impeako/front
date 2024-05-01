@@ -131,7 +131,7 @@
     import UserNav from "../../components/UserNavBar.vue"
     import FooterComponent from "../../components/FooterComponent.vue";
     import axios from "axios";
-    import { createWorker } from 'tesseract.js';
+    import { createWorker,PSM } from 'tesseract.js';
 
     export default{
         created() {
@@ -307,10 +307,10 @@
             },           
             extractText(file){
                 (async () => {
-                const worker = await createWorker('fra');
-                const data = await worker.recognize(file);
-                this.OCRData = data.data.text;
-                await worker.terminate();
+                const worker = await createWorker('eng');
+                worker.setParameters({tessedit_pageseg_mode: PSM.AUTO,});
+                const { data: { text } } = await worker.recognize(file);
+                console.log(text);
                 })();
             },
         },
