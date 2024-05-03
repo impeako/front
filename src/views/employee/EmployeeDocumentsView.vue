@@ -7,7 +7,7 @@
     <v-col cols="3">
       <v-card>
         <v-list lines="two" class="requests text-left">
-          <v-list-subheader>Pending requests</v-list-subheader>   
+          <v-list-subheader>Pending requests <v-icon icon="mdi-progress-clock" size="x-small" color="blue"></v-icon></v-list-subheader>   
           <p v-if="requests.length === 0" class="ml-5">You have no pending requests!</p>
           <v-list-item v-for="(request, idx) in requests" :key="idx">
             <v-row>
@@ -95,7 +95,7 @@
     </v-col>
 </v-row>
 <v-row>
-  <v-sheet class="mx-auto doc-request">
+  <v-sheet class="doc-request">
         <v-form @submit.prevent class="text-right">       
         <v-textarea
             v-model="requestSended"
@@ -105,13 +105,13 @@
             class="mb-10 text"
             >
         </v-textarea>
-        <v-row>
+        <v-row class="second">
         <v-autocomplete
           v-model="requestedType"
           label="Document Type"
           :items="typeList"
           required
-          variant="solo"
+          variant="outlined"
           hide-details
         ></v-autocomplete>
         <v-dialog
@@ -123,8 +123,6 @@
         </template>
         <v-card
         title="Want to send this request ?"
-        max-width="400px"
-        class="mx-auto"
         >
         <v-card-text>
           <p><b>requested document:</b>{{ this.requestedType }}</p>
@@ -378,6 +376,9 @@
       font-weight: 500;
       font-size: 18px;
       color: black;
+    }
+    .doc-request{
+      width: 50%;
     }
     @media screen and (max-width:612px) {
       .v-container {

@@ -5,11 +5,11 @@
         <v-col cols="6">
             <v-card>
             <v-card-title class="text-left mb-5">
-                    New Requests
+                    Pending Requests
                     <v-icon icon="mdi-progress-clock" size="x-small" color="blue"></v-icon>
                 </v-card-title>
                 <v-card-subtitle v-if="newR == ''" class="text-left mb-3">
-                    No new requests yet!     
+                    No Pending requests yet!     
                 </v-card-subtitle>
             <v-expansion-panels variant="accordion">
             <v-expansion-panel v-for="(n, index) in newR" :key="index">
