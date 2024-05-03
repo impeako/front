@@ -54,7 +54,7 @@
         type="password"
         variant="outlined"
         v-model="newpassword"
-        :rules="[rules.required, rules.min]"
+        :rules="[rules.required, rules.min, rules.noMatch]"
       ></v-text-field>
       <v-text-field
         label="New password confirmation"
@@ -95,7 +95,7 @@
             if (this.profile.avatar && this.profile.avatar.data) {
               return `data:image/jpeg;base64,${this.profile.avatar.data}`;
             } else {
-              return "./../../assets/avatar.jpg";
+              return "../../assets/avatar.jpg";
             }
           }
         },
@@ -111,7 +111,8 @@
             rules: {
               required: value => !!value || 'Required.',
               min: v => v.length >= 8 || 'Min 8 characters',
-              passwordMatch: value => value === this.newpassword || (`passwords you entered don't match`),
+              passwordMatch: value => value === this.newpassword || (`passwords you entered don't match!`),
+              noMatch: value => value !== this.oldpassword || ("New password must not match the old one!"),
             },
           }
         },
@@ -193,6 +194,7 @@
 <style scoped>
   .v-card {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    margin-bottom: 50px;
   }
   .information {
     font-weight: 500;

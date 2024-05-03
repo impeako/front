@@ -4,76 +4,27 @@
     <!-- document request -->
     <v-row no-gutters>
     <!-- Request History -->
-    <v-col>
-        <v-sheet class="mx-auto doc-request">
-        <v-form @submit.prevent class="text-right">       
-        <v-textarea
-            v-model="requestSended"
-            label="Your request motion"
-            variant="outlined"
-            hide-details
-            class="mb-10 text"
-            >
-        </v-textarea>
-        <v-row>
-        <v-autocomplete
-          v-model="requestedType"
-          label="Document Type"
-          :items="typeList"
-          required
-          variant="solo"
-          hide-details
-        ></v-autocomplete>
-        <v-dialog
-           v-model="dialog"
-          persistent
-        >
-        <template v-slot:activator="{ props: activatorProps }">
-        <v-btn color="#0a66c2" type="submit" class="me-4 mb-10" v-bind="activatorProps">Request</v-btn>
-        </template>
-        <v-card
-        title="Want to send this request ?"
-        max-width="400px"
-        class="mx-auto"
-        >
-        <v-card-text>
-          <p><b>requested document:</b>{{ this.requestedType }}</p>
-          <p><b>request motion:</b>{{ this.requestSended }}</p>
-        </v-card-text>
-        <template v-slot:actions>
-        <v-spacer></v-spacer>
-        <v-btn @click="dialog = false; ">
-        no
-        </v-btn>
-        <v-btn @click="dialog = false; sendRequest()">
-        yes
-        </v-btn>
-        </template>
-        </v-card>
-        </v-dialog>
-      </v-row>
-        </v-form>
-        </v-sheet>
-    <v-card>
-    <v-list lines="two" class="requests text-left">
-      <v-list-subheader>Pending requests</v-list-subheader>   
-      <p v-if="requests.length === 0" class="ml-5">You have no pending requests!</p>
-      <v-list-item v-for="(request, idx) in requests" :key="idx">
-        <v-row>
-        <v-col cols="1">
-        <v-icon icon="mdi-progress-clock" color="blue"></v-icon>
-        </v-col>
-        <v-col>
-        <h5 class="requestId"> Request ID: {{ request.id }}</h5>
-        <p class="content">Sending Date: {{ request.sendingDate }}</p>
-        <p class="content">Content: {{ request.content }}</p>
-        <p class="content">status: {{ request.treated }}</p>
-        <v-divider inset class="mt-5"></v-divider>
-        </v-col>
-        </v-row>
-      </v-list-item> 
-    </v-list>
-    </v-card>
+    <v-col cols="3">
+      <v-card>
+        <v-list lines="two" class="requests text-left">
+          <v-list-subheader>Pending requests</v-list-subheader>   
+          <p v-if="requests.length === 0" class="ml-5">You have no pending requests!</p>
+          <v-list-item v-for="(request, idx) in requests" :key="idx">
+            <v-row>
+              <v-col cols="1">
+              <v-icon icon="mdi-progress-clock" color="blue"></v-icon>
+              </v-col>
+              <v-col>
+              <h5 class="requestId"> Request ID: {{ request.id }}</h5>
+              <p class="content">Sending Date: {{ request.sendingDate }}</p>
+              <p class="content">Content: {{ request.content }}</p>
+              <p class="content">status: {{ request.treated }}</p>
+              <v-divider inset class="mt-5"></v-divider>
+              </v-col>
+            </v-row>
+          </v-list-item> 
+        </v-list>
+      </v-card>
     </v-col>
     <v-col class="answers" cols="3">
         <v-card>
@@ -142,6 +93,57 @@
         </v-expansion-panels>
     </v-card>
     </v-col>
+</v-row>
+<v-row>
+  <v-sheet class="mx-auto doc-request">
+        <v-form @submit.prevent class="text-right">       
+        <v-textarea
+            v-model="requestSended"
+            label="Your request motion"
+            variant="outlined"
+            hide-details
+            class="mb-10 text"
+            >
+        </v-textarea>
+        <v-row>
+        <v-autocomplete
+          v-model="requestedType"
+          label="Document Type"
+          :items="typeList"
+          required
+          variant="solo"
+          hide-details
+        ></v-autocomplete>
+        <v-dialog
+           v-model="dialog"
+          persistent
+        >
+        <template v-slot:activator="{ props: activatorProps }">
+        <v-btn color="#0a66c2" type="submit" class="me-4 mb-10" v-bind="activatorProps">Request</v-btn>
+        </template>
+        <v-card
+        title="Want to send this request ?"
+        max-width="400px"
+        class="mx-auto"
+        >
+        <v-card-text>
+          <p><b>requested document:</b>{{ this.requestedType }}</p>
+          <p><b>request motion:</b>{{ this.requestSended }}</p>
+        </v-card-text>
+        <template v-slot:actions>
+        <v-spacer></v-spacer>
+        <v-btn @click="dialog = false; ">
+        no
+        </v-btn>
+        <v-btn @click="dialog = false; sendRequest()">
+        yes
+        </v-btn>
+        </template>
+        </v-card>
+        </v-dialog>
+      </v-row>
+        </v-form>
+        </v-sheet>
 </v-row>
 </v-container>
     <!-- side nav bar -->

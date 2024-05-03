@@ -3,29 +3,9 @@
     <v-row class="container">
     <v-col cols="3" offset="2" class="form pa-10 mr-10">
         <form @submit.prevent="submit">
-            <h2 class="mb-10 text-left">Add a document</h2>
-                            <v-row class="name mt-10">
-                            <v-autocomplete
-                            v-model="OCREmail"
-                            label="Owner Email"
-                            :items="emails"
-                            required
-                            variant="outlined"
-                            hide-details
-                            ></v-autocomplete>
-                        </v-row>
-                        <v-row>
-                            <v-autocomplete
-                            v-model="OCRType"
-                            label="Type"
-                            :items="typeList"
-                            required
-                            variant="outlined"
-                            hide-details
-                            ></v-autocomplete>
-                        </v-row>   
+            <h2 class="mb-10 text-left">Add a document</h2>  
                         <v-row> 
-                            <v-file-input clearable label="Add File" variant="outlined" v-model="file" @change="extractText(this.file[0])"></v-file-input>
+                            <v-file-input clearable label="Add File" variant="outlined" v-model="file" @change="ocr(this.file[0])"></v-file-input>
                         </v-row>
                         <v-row class="addbtn">
                             <v-btn
@@ -149,7 +129,6 @@
         data() {
           return {
             emails:[],
-            typeList: ["Payslips", "Salary statements", "Wage summaries", "Invoices", "Purchase orders", "Receipts", "Expense reports", "Contracts", "Agreements", "Legal notices", "Terms of service", "Employment contracts", "Job descriptions", "Performance reviews", "HR policies and procedures", "Memos", "Announcements", "Newsletters", "Press releases", "Meeting agendas", "Meeting minutes", "Action items", "Presentations", "Training manuals", "Course outlines", "Training schedules", "Compliance reports", "Audit documents", "Regulatory filings", "Travel itineraries", "Travel policies", "Health and safety manuals", "Incident reports", "Emergency procedures", "Quality control reports", "Inspection checklists", "Product specifications", "Customer feedback forms", "Service level agreements", "Customer support scripts", "Project charters", "Project plans", "Status reports", "Gantt charts", "Leave requests", "Expense reimbursement forms", "Employee onboarding forms", "IT policies", "System documentation", "Software licenses", "Maintenance schedules", "Lease agreements", "Facility usage policies"],
             documents: [],
             // form data
             file: null,
@@ -158,8 +137,8 @@
             searchedDoc: '',
             dialog: false,
             OCRData: '',
-            OCREmail:'',
-            OCRType:'',
+            id: '',
+            type:'',
           }
         },
         methods: {
@@ -304,14 +283,61 @@
                 else {
                     this.openPDF(data)
                 }
-            },           
-            extractText(file){
-                (async () => {
-                const worker = await createWorker('eng');
+            },
+            async ocr(file){
+                const text = await this.extractText(file);
+                this.OCRData = text
+                this.id = await this.extractID(text);
+                this.type = await this.extractType(text)
+            }, 
+            async extractText(file){
+                const worker = await createWorker('fra');
                 worker.setParameters({tessedit_pageseg_mode: PSM.AUTO,});
                 const { data: { text } } = await worker.recognize(file);
-                console.log(text);
-                })();
+                return text
+            },
+            async extractID(text){
+                const patterns = [
+                    /id:\s*(\d+)/i,
+                    /matricule:\s*(\d+)/i,
+                    /siret:\s*(\d+)/i,
+                    /id\s*(\d+)/i,
+                    /matricule\s*(\d+)/i,
+                    /siret\s*(\d+)/i
+                ];
+                for (const pattern of patterns) {
+                    const match = text.match(pattern);
+                    if (match) {
+                        const siretNumber = match[1];
+                        console.log("Siret Number:", siretNumber);
+                        return siretNumber
+                    }
+                }
+                console.log("No Siret number found.");
+            },
+            async extractType(text){
+                const documentTypes = [
+                /Bulletin de paie/i,
+                /Contrat de travail/i,
+                /Fiches de paie/i,
+                /Attestation d'emploi/i,
+                /Certificat de travail/i,
+                /Relevé d'heures/i,
+                /Relevé d'absences/i,
+                /Dossier médical/i,
+                /Plan de formation/i,
+                /Politique de l'entreprise/i,
+                /Document sur la protection des données personnelles/i
+                ];
+                for (const pattern of documentTypes) {
+                    const match = text.match(pattern);
+                    if (match) {
+                        const type = match[0];
+                        console.log("Document type:", type);
+                        return type
+                    }
+                }
+                console.log("No Document type is found.");
             },
         },
     }
