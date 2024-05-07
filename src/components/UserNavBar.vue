@@ -19,9 +19,6 @@
           <router-link to="/employee/Documents">
             <li @click="toggleExpand"><v-icon icon="mdi-send" class="mr-3"></v-icon>Documents</li>
           </router-link>
-          <router-link to="/employee/assistance">
-            <li @click="toggleExpand"><v-icon icon="mdi-progress-helper" class="mr-3"></v-icon>Assistance</li>
-          </router-link>
           <router-link to="/hr/requests-treatment" v-if="role === 'HR'">
             <li @click="toggleExpand"><v-icon icon="mdi-transcribe" class="mr-3"></v-icon>Requests</li>
           </router-link>
@@ -63,9 +60,6 @@
           </router-link>
           <router-link to="/employee/Documents">
           <v-list-item prepend-icon="mdi-send" title="documents" value="documents" class="icons text-left"></v-list-item>
-          </router-link>
-          <router-link to="/employee/assistance">
-          <v-list-item prepend-icon="mdi-progress-helper" title="Assistance" value="Assistance" class="icons text-left"></v-list-item>
           </router-link>
           <v-divider></v-divider>
           <router-link to="/hr/requests-treatment">

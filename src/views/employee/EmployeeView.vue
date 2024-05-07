@@ -71,6 +71,13 @@
     </form>
     </v-card-text>
   </v-card>
+  <df-messenger
+  chat-icon="https:&#x2F;&#x2F;cdn-icons-png.flaticon.com&#x2F;512&#x2F;4298&#x2F;4298373.png"
+  intent="WELCOME"
+  chat-title="EDRMS"
+  agent-id="6f206d09-b1ca-4f31-9a0e-c1fdb7a7b825"
+  language-code="en"
+></df-messenger>
   <FooterComponent/>
   <employeeNav/>
 </template>
@@ -193,7 +200,6 @@
 
 <style scoped>
   .v-card {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     margin-bottom: 50px;
   }
   .information {

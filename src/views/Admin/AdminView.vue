@@ -2,7 +2,7 @@
     <LogoComponent/>
         <v-container class="container">
             <v-row no-gutters>
-                <v-col cols="6" class="form pa-10 mr-10">
+                <v-col cols="6" class="form mr-10 pa-10">
                     <form @submit.prevent="submit">
                         <h2 class="mb-5 text-left">Register User</h2>
                         <v-row class="name mt-10">
@@ -107,7 +107,7 @@
                         @input="searchUser"
                         @keydown.delete="searchUser($event)"
                         class="search"
-                        variant="outlined"
+                        variant="solo"
                         clearable
                         @clear="resetSearch()"
                         append-inner-icon="mdi-account-search"
@@ -278,6 +278,13 @@
                 </v-col>
             </v-row>
         </v-container>
+        <df-messenger
+        chat-icon="https:&#x2F;&#x2F;cdn-icons-png.flaticon.com&#x2F;512&#x2F;4298&#x2F;4298373.png"
+        intent="WELCOME"
+        chat-title="EDRMS"
+        agent-id="6f206d09-b1ca-4f31-9a0e-c1fdb7a7b825"
+        language-code="en"
+        ></df-messenger>
     <EmployeeNav/>
     <FooterComponent/>
 </template>
@@ -465,7 +472,6 @@
     }
     .form{
         border-radius: 9px;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         height: 610px;
         background: white;
     }
@@ -482,7 +488,6 @@
       overflow-y: scroll;
       scrollbar-width: none;
       margin-top: 10px;
-      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
       border-radius: 9px;
       z-index: 0;
     }

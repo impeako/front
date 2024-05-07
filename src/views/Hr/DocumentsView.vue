@@ -5,7 +5,7 @@
         <form @submit.prevent="submit">
             <h2 class="mb-10 text-left">Add a document</h2>  
                         <v-row> 
-                            <v-file-input clearable label="Add File" variant="outlined" v-model="file" @change="ocr(this.file[0])"></v-file-input>
+                            <v-file-input clearable label="Add File" variant="outlined" v-model="file" @change="console.log(this.file[0]); ocr(this.file[0])"></v-file-input>
                         </v-row>
                         <v-row class="addbtn">
                             <v-btn
@@ -23,15 +23,14 @@
 
     <v-col cols="4" class="pa-0 ml-10 list">
     <v-card>
-        <v-list lines="two">
             <v-text-field 
                         v-model="searchedDoc"
                         label="Search Document"
                         hide-details
                         @input="searchDoc"
-                        @keydown.delete="searchDoc($event)"
+                        @keyup.delete="searchDoc($event)"
                         class="search pa-2"
-                        variant="underlined"
+                        variant="outlined"
                         @click:append-inner="resetSearch"
                         append-inner-icon="mdi-file-search"
                         >
@@ -40,7 +39,8 @@
                                 <v-icon v-if="searchedDoc !== ''" key="clearIcon" @click="resetSearch">mdi-close-circle</v-icon>
                             </transition>
                         </template>
-                    </v-text-field>
+            </v-text-field>
+        <v-list lines="two">  
         <v-list-subheader>Documents</v-list-subheader>
         <v-list-item v-for="(document, index) in documents" :key="index" class="text-left">
             <v-row>
@@ -102,6 +102,13 @@
     </v-card>
     </v-col>
     </v-row>
+    <df-messenger
+    chat-icon="https:&#x2F;&#x2F;cdn-icons-png.flaticon.com&#x2F;512&#x2F;4298&#x2F;4298373.png"
+    intent="WELCOME"
+    chat-title="EDRMS"
+    agent-id="6f206d09-b1ca-4f31-9a0e-c1fdb7a7b825"
+    language-code="en"
+    ></df-messenger>
     <UserNav/>
     <FooterComponent/>
 </template>
@@ -215,14 +222,14 @@
             openPDF(data){
                 const binaryData = atob(data);
 
-                        const arrayBuffer = new ArrayBuffer(binaryData.length);
-                        const uint8Array = new Uint8Array(arrayBuffer);
-                        for (let i = 0; i < binaryData.length; i++) {
-                            uint8Array[i] = binaryData.charCodeAt(i);
-                        }
-                        const blob = new Blob([uint8Array], { type: 'application/pdf' });
-                        const url = URL.createObjectURL(blob);
-                        window.open(url);
+                const arrayBuffer = new ArrayBuffer(binaryData.length);
+                const uint8Array = new Uint8Array(arrayBuffer);
+                for (let i = 0; i < binaryData.length; i++) {
+                    uint8Array[i] = binaryData.charCodeAt(i);
+                    }
+                const blob = new Blob([uint8Array], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+                window.open(url);
             },
 
             getFileTypeFromSignature(fileData) {
@@ -252,7 +259,11 @@
                     this.getDocuments()
                 } else {
                 this.documents = this.documents.filter(doc => {
-                    return doc.ownerEmail.toLowerCase().includes(searchQuery);
+                    const ownerEmailMatch = doc.ownerEmail.toLowerCase().includes(searchQuery);
+                    const docIdMatch = doc.doc_id.toLowerCase().includes(searchQuery);
+                    const docTypeMatch = doc.type.toLowerCase().includes(searchQuery);
+                    const docNameMatch = doc.owner.firstname.toLowerCase().includes(searchQuery);
+                    return ownerEmailMatch || docIdMatch || docTypeMatch || docNameMatch;
                 });
                 }
             },
@@ -349,12 +360,14 @@
         overflow: hidden;
         padding: 20px;
     }
+    .v-card--variant-elevated {
+        box-shadow: none;
+    }
     .doc{
         font-weight: 500;
     }
     .form{
         border-radius: 9px;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         background-color: white;
         max-height: 400px;
     }
@@ -365,7 +378,6 @@
         max-height: 500px;
         overflow-y: scroll;
         scrollbar-width: none;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     }
     .addbtn{
         display: flex;

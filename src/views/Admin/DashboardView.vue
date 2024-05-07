@@ -26,6 +26,13 @@
             </v-col>
         </v-row>
     </v-container>
+    <df-messenger
+    chat-icon="https:&#x2F;&#x2F;cdn-icons-png.flaticon.com&#x2F;512&#x2F;4298&#x2F;4298373.png"
+    intent="WELCOME"
+    chat-title="EDRMS"
+    agent-id="6f206d09-b1ca-4f31-9a0e-c1fdb7a7b825"
+    language-code="en"
+    ></df-messenger>
     <EmployeeNav/>
     <FooterComponent/>
 </template>
@@ -43,7 +50,7 @@
             FooterComponent,
         },
         data: () => ({
-            requestNumber: 0,
+            requestNumber: null,
             averageResponseTime: null,
             typesArray: [],
             totalUsers: null,
@@ -271,16 +278,10 @@
                 'rgba(54, 162, 235, 0.5)',
                 'rgba(255, 206, 86, 0.5)',
                 'rgba(75, 192, 192, 0.5)',
+                'rgba(200, 183, 255, 0.8)',
+
                 // Add more colors if needed
                 ],
-                borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                // Add more colors if needed
-                ],
-                borderWidth: 1
             }]
             };
 
@@ -296,7 +297,7 @@
                 type: 'polarArea',
                 data: chartData,
                 options: {
-                    aspectRatio: 1.5,
+                    aspectRatio: 1
                 }
             });
             } else {
@@ -357,7 +358,7 @@
                 datasets: [{
                     label: 'count',
                     data: [Employees.hr, Employees.admin, Employees.employee],
-                    backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)', 'rgba(133, 122, 120, 0.8)'],
+                    backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)', 'rgba(200, 183, 255, 0.8)'],
                     borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
                     borderWidth: 1
                 }]

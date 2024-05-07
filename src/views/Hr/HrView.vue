@@ -2,32 +2,84 @@
     <LogoComponent/>
 
     <v-row class="container" justify="space-between">
-        <v-col cols="6">
-            <v-card>
+        <v-col cols="4">
+            <v-card hover>
             <v-card-title class="text-left mb-5">
                     Pending Requests
                     <v-icon icon="mdi-progress-clock" size="x-small" color="blue"></v-icon>
                 </v-card-title>
-                <v-card-subtitle v-if="newR == ''" class="text-left mb-3">
-                    No Pending requests yet!     
+                <v-card-subtitle class="text-left mb-3">
+                    <p>Pending requests number: {{ this.PendingCount(this.newR) }}</p>
+                    <v-btn @click="show1 = !show1" icon="mdi-details" variant="plain" color="blue"></v-btn>
                 </v-card-subtitle>
-            <v-expansion-panels variant="accordion">
+            <v-expansion-panels variant="accordion" v-if="show1">
             <v-expansion-panel v-for="(n, index) in newR" :key="index">
-                <v-expansion-panel-title>
+                <v-expansion-panel-title v-if="n.status === null">
                 <h4 class="title">Request id: {{ n.id }}</h4>
-                <p class="date mb-2">Date of sending: {{ n.sendingDate }}</p>
-                <p class="date">Sender : {{ n.sender.firstname }} {{ n.sender.lastname }}</p>
+                <p class="date mb-2"><b>>Date of sending:</b> {{ n.sendingDate }}</p>
+                <p class="date"><b>Sender :</b> {{ n.sender.firstname }} {{ n.sender.lastname }}</p>
                 </v-expansion-panel-title>
                 <v-expansion-panel-text class="text-left">
                 <p class="motion mb-8">Request content: {{ n.content }}</p>
+                <v-btn @click="changeStatus(n.id, 'in progress')" color="primary">start treatment</v-btn>
+                </v-expansion-panel-text>
+            </v-expansion-panel>
+            </v-expansion-panels>
+        </v-card>
+        </v-col>
+        <v-col cols="4">
+            <v-card hover>
+            <v-card-title class="text-left mb-5">
+                    In treatment Requests
+                    <v-icon icon="mdi-pencil" size="x-small" color="blue"></v-icon>
+                </v-card-title>
+                <v-card-subtitle class="text-left mb-3">
+                    <p>In treatment requests number: {{ this.inTreatmentCount(this.newR) }}</p>
+                    <v-btn @click="show2 = !show2" icon="mdi-details" variant="plain" color="blue"></v-btn>   
+                </v-card-subtitle>
+            <v-expansion-panels variant="accordion" v-if="show2">
+            <v-expansion-panel v-for="(n, index) in newR" :key="index">
+                <v-expansion-panel-title v-if="n.status">
+                <h4 class="title">Request id: {{ n.id }}</h4>
+                <p class="date mb-2"><b>Date of sending:</b> {{ n.sendingDate }}</p>
+                <p class="date mb-2"><b>Sender :</b> {{ n.sender.firstname }} {{ n.sender.lastname }}</p>
+                <p class="date"><b>status :</b> {{ n.status}}</p>
+                </v-expansion-panel-title>
+                <v-expansion-panel-text class="text-left" v-if="n.status">
+                <p class="motion mb-8">Request content: {{ n.content }}</p>
                 <div class="buttons">
+                    <v-dialog
+                        v-model="dialog3"
+                        max-width="400"
+                        persistent
+                        >
+                        <template v-slot:activator="{ props: activatorProps }">
+                        <v-btn color="#0a66c2" type="submit" class="me-4" v-bind="activatorProps">status</v-btn>
+                        </template>
+                        <v-card
+                        title="Change request status:"
+                        >
+                        <v-card-text>
+                            <v-text-field label="status" variant="underlined" v-model="newStatus" class="mt-5"></v-text-field>
+                        </v-card-text>
+                        <template v-slot:actions>
+                        <v-spacer></v-spacer>
+                        <v-btn @click="dialog3 = false">
+                        Cancel
+                        </v-btn>
+                        <v-btn @click="dialog3 = false; changeStatus(n.id, this.newStatus)">
+                        Change
+                        </v-btn>
+                        </template>
+                        </v-card>
+                        </v-dialog>
                     <v-dialog
                         v-model="dialog2"
                         max-width="400"
                         persistent
                         >
                         <template v-slot:activator="{ props: activatorProps }">
-                        <v-btn color="#0a66c2" type="submit" class="me-4" v-bind="activatorProps">Approve</v-btn>
+                        <v-btn color="success" type="submit" class="me-4" v-bind="activatorProps">Approve</v-btn>
                         </template>
                         <v-card
                         title="Approve this request ?"
@@ -71,7 +123,7 @@
                         <v-btn color="error" type="submit" class="me-4" v-bind="activatorProps">Deny</v-btn>
                         </template>
                         <v-card
-                        title="Want to send this request ?"
+                        title="Deny this request ?"
                         >
                         <v-card-text>
                             <v-textarea
@@ -99,23 +151,24 @@
             </v-expansion-panels>
         </v-card>
         </v-col>
-        <v-col cols="5">
-            <v-card>
+        <v-col cols="4">
+            <v-card hover>
                 <v-card-title class="text-left mb-5">
                     Treated Requests
                     <v-icon icon="mdi-check" size="x-small" color="green"></v-icon>
                 </v-card-title>
-                <v-card-subtitle v-if="treated == ''" class="text-left mb-3">
-                    No treated requests yet!     
+                <v-card-subtitle class="text-left mb-3">
+                    <p>Treated requests number: {{ this.treated.length }}</p>
+                    <v-btn @click="show3 = !show3" icon="mdi-details" variant="plain" color="blue"></v-btn>     
                 </v-card-subtitle>
-            <v-expansion-panels variant="accordion">
+            <v-expansion-panels variant="accordion" v-if="show3">
             <v-expansion-panel v-for="(request, index) in treated" :key="index">
                 <v-expansion-panel-title>
                 <v-icon icon="mdi-cancel" color="error" v-if="request.treat == 'DENIED'"></v-icon>
                 <v-icon icon="mdi-check" color="success" v-if="request.treat == 'APPROVED'"></v-icon>
                 <h4 class="title">Answer id: {{ request.id }}</h4>
-                <p class="date">Sender: {{ request.owner.firstname }}</p>
-                <p class="date">Treatement date: {{ request.treatmentDate }}</p>
+                <p class="date mb-2"><b>Sender: </b>{{ request.owner.firstname }}</p>
+                <p class="date"><b>Treatement date: </b>{{ request.treatmentDate }}</p>
                 </v-expansion-panel-title>
                 <v-expansion-panel-text class="text-left">
                 <p class="motion mb-2">Request content: {{ request.content }}</p>
@@ -131,6 +184,13 @@
         </v-col>
         
     </v-row>
+    <df-messenger
+    chat-icon="https:&#x2F;&#x2F;cdn-icons-png.flaticon.com&#x2F;512&#x2F;4298&#x2F;4298373.png"
+    intent="WELCOME"
+    chat-title="EDRMS"
+    agent-id="6f206d09-b1ca-4f31-9a0e-c1fdb7a7b825"
+    language-code="en"
+    ></df-messenger>
     <UserNav/>
     <FooterComponent/>
 </template>
@@ -165,12 +225,17 @@
             newR: [],
             dialog: false,
             dialog2: false,
+            dialog3: false,
             docId:'',
             idArray:[],
             fileDataArray: [],
             documents: [],
             motion: '',
             docInfo: '',
+            newStatus: '',
+            show1: false,
+            show2: false,
+            show3: false,
           }
         },
         methods: {
@@ -290,6 +355,42 @@
                     });
                 }
             },
+            changeStatus(reqID, azer){
+                const formData = new FormData();
+                    formData.append('id', reqID);
+                    formData.append('status', azer);
+                axios.post('http://localhost:8081/edrms/hr/request/change-status', formData, {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                    }
+                })
+                .then(response => {
+                    this.getTreated();
+                    this.getNew();
+                    this.getDocuments();
+                })
+                .catch(error => {
+                    console.error('Error Starting treatment:', error);
+                });
+            },
+            PendingCount(array){
+                const charray = array
+                return charray.reduce((count, obj) => {
+                    if (obj.status === null) {
+                        count++;
+                    }
+                    return count;
+                }, 0);
+            },
+            inTreatmentCount(array){
+                const charray = array
+                return charray.reduce((count, obj) => {
+                    if (obj.status !== null) {
+                        count++;
+                    }
+                    return count;
+                }, 0);
+            },
         }
     }
 </script>
@@ -326,7 +427,7 @@
         justify-content: end;
     }
     .v-card{
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        box-shadow: none;
     }
     @media screen and (max-width: 612px) {
         .container{
