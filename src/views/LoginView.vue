@@ -29,7 +29,7 @@
           @keyup.enter="login"
           clearable
         ></v-text-field>
-            <v-btn @click="login" :loading=this.loading >Sign In</v-btn>
+            <v-btn @click="login" :loading=this.loading>Sign In</v-btn>
           </div>
           <a href="#" class="forgot">Forgot Password?</a>
       </form>
@@ -63,9 +63,11 @@
             const { access_token, refresh_token , role} = response.data;
             const store = useTokenStore()
             store.setToken(access_token)
+            store.setrefreshToken(refresh_token)
             store.setRole(role)
             store.authenticate()
             localStorage.setItem('authToken', access_token)
+            localStorage.setItem('refreshToken', refresh_token)
             localStorage.setItem('userRole', role)
             router.push('/employee')
           })

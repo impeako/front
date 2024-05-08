@@ -16,7 +16,7 @@
             <v-expansion-panel v-for="(n, index) in newR" :key="index">
                 <v-expansion-panel-title v-if="n.status === null">
                 <h4 class="title">Request id: {{ n.id }}</h4>
-                <p class="date mb-2"><b>>Date of sending:</b> {{ n.sendingDate }}</p>
+                <p class="date mb-2"><b>Date of sending:</b> {{ n.sendingDate }}</p>
                 <p class="date"><b>Sender :</b> {{ n.sender.firstname }} {{ n.sender.lastname }}</p>
                 </v-expansion-panel-title>
                 <v-expansion-panel-text class="text-left">
@@ -313,6 +313,7 @@
                     this.getTreated();
                     this.getNew();
                     this.getDocuments();
+                    console.log(response.data)
                 })
                 .catch(error => {
                     console.error('Error approving request:', error);

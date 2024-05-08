@@ -5,7 +5,7 @@
         <form @submit.prevent="submit">
             <h2 class="mb-10 text-left">Add a document</h2>  
                         <v-row> 
-                            <v-file-input clearable label="Add File" variant="outlined" v-model="file" @change="console.log(this.file[0]); ocr(this.file[0])"></v-file-input>
+                            <v-file-input clearable label="Add File" variant="outlined" v-model="file" @change="ocr(this.file[0])"></v-file-input>
                         </v-row>
                         <v-row class="addbtn">
                             <v-btn
@@ -14,6 +14,7 @@
                             size="large"
                             color="#0a66c2"
                             @click="addDoc()"
+                            :disabled="diss"
                             >
                             add file
                             </v-btn>
@@ -146,6 +147,7 @@
             OCRData: '',
             id: '',
             type:'',
+            diss: true,
           }
         },
         methods: {
@@ -182,8 +184,8 @@
             },
             addDoc() {
                 const formData = new FormData();
-                formData.append('ownerEmail', this.OCREmail);
-                formData.append('type', this.OCRType);
+                formData.append('idd', this.id);
+                formData.append('type', this.type);
                 formData.append('fileData', this.file[0]);
                 formData.append('OCRdata', this.OCRData);
                 axios.post('http://localhost:8081/edrms/hr/documents/add',formData,{
@@ -298,8 +300,8 @@
             async ocr(file){
                 const text = await this.extractText(file);
                 this.OCRData = text
-                this.id = await this.extractID(text);
-                this.type = await this.extractType(text)
+                await this.extractID(text);
+                await this.extractType(text).finally(this.diss = false)
             }, 
             async extractText(file){
                 const worker = await createWorker('fra');
@@ -321,31 +323,34 @@
                     if (match) {
                         const siretNumber = match[1];
                         console.log("Siret Number:", siretNumber);
-                        return siretNumber
+                        this.id = siretNumber
+                        return
                     }
                 }
                 console.log("No Siret number found.");
             },
             async extractType(text){
                 const documentTypes = [
-                /Bulletin de paie/i,
-                /Contrat de travail/i,
-                /Fiches de paie/i,
-                /Attestation d'emploi/i,
-                /Certificat de travail/i,
-                /Relevé d'heures/i,
-                /Relevé d'absences/i,
-                /Dossier médical/i,
-                /Plan de formation/i,
-                /Politique de l'entreprise/i,
-                /Document sur la protection des données personnelles/i
+                /bulletin de paie/i,
+                /contrat de travail/i,
+                /fiches de paie/i,
+                /attestation d'emploi/i,
+                /certificat de travail/i,
+                /relevé d'heures/i,
+                /relevé d'absences/i,
+                /dossier médical/i,
+                /plan de formation/i,
+                /politique de l'entreprise/i,
+                /document sur la protection des données personnelles/i
                 ];
+                const lower = text.toLowerCase()
                 for (const pattern of documentTypes) {
-                    const match = text.match(pattern);
+                    const match = lower.match(pattern);
                     if (match) {
-                        const type = match[0];
-                        console.log("Document type:", type);
-                        return type
+                        const otype = match[0];
+                        console.log("Document type:", otype);
+                        this.type = otype
+                        return
                     }
                 }
                 console.log("No Document type is found.");

@@ -6,6 +6,7 @@ export const useTokenStore = defineStore("token",{
           isAuthenticated: false,
           token : null,
           role : null,
+          refreshToken: null,
         }
       },
     actions: {
@@ -15,10 +16,17 @@ export const useTokenStore = defineStore("token",{
       getToken() {
         return this.token;
       },
+      setrefreshToken(token) {
+        this.token = token;
+      },
+      getrefreshToken() {
+        return this.token;
+      },
       clearToken() {
         this.token = null;
         this.role = null;
         this.isAuthenticated = false;
+        this.refreshToken = null;
       },
       setRole(role) {
         this.role = role;
@@ -35,10 +43,12 @@ export const useTokenStore = defineStore("token",{
       initializeAuth() {
         const token = localStorage.getItem('authToken');
         const role = localStorage.getItem('userRole');
+        const refreshToken = localStorage.getItem('refreshToken')
         if (token) {
           this.isAuthenticated = true;
           this.token = token;
           this.role = role;
+          this.refreshToken = refreshToken;
         }
       }
     },
