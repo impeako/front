@@ -109,8 +109,8 @@
                         class="search"
                         variant="solo"
                         clearable
-                        @clear="resetSearch()"
                         append-inner-icon="mdi-account-search"
+                        @click:clear="resetSearch"
                         >
                         </v-text-field>
                     <v-expansion-panels variant="accordion">
@@ -119,13 +119,12 @@
                             <v-row class="title-row">
                                 <h4 class="title">Name : {{ user.firstname }} {{ user.lastname }}</h4>
                                 <v-dialog
-                                v-model="dialog"
+                                v-model="user.dialog"
                                 max-width="400"
                                 persistent
                                 >
                                 <template v-slot:activator="{ props: activatorProps }">
-                                    <v-btn prepend-icon="mdi-delete" variant="plain" class="delete" v-bind="activatorProps">                                   
-                                    </v-btn>
+                                    <v-btn prepend-icon="mdi-delete" variant="plain" class="delete" v-bind="activatorProps"></v-btn>
                                 </template>
 
                                 <v-card
@@ -135,11 +134,11 @@
                                     <template v-slot:actions>
                                     <v-spacer></v-spacer>
 
-                                    <v-btn @click="dialog = false; ">
+                                    <v-btn @click="user.dialog = false">
                                         no
                                     </v-btn>
 
-                                    <v-btn @click="dialog = false; deleteUser(user.id)">
+                                    <v-btn @click="user.dialog = false; deleteUser(user.id)">
                                         yes
                                     </v-btn>
                                     </template>
@@ -278,13 +277,6 @@
                 </v-col>
             </v-row>
         </v-container>
-        <df-messenger
-        chat-icon="https:&#x2F;&#x2F;cdn-icons-png.flaticon.com&#x2F;512&#x2F;4298&#x2F;4298373.png"
-        intent="WELCOME"
-        chat-title="EDRMS"
-        agent-id="6f206d09-b1ca-4f31-9a0e-c1fdb7a7b825"
-        language-code="en"
-        ></df-messenger>
     <EmployeeNav/>
     <FooterComponent/>
 </template>
@@ -406,16 +398,20 @@
                 });
             },
             searchUser(event) {
-                const searchQuery = this.searchedUser.toLowerCase();
                 if (event && event.keyCode === 8) {
                     this.getUsers();
-                } else {
+                }
+                const searchQuery = this.searchedUser.toLowerCase();
                 this.userData = this.userData.filter(user => {
+                    const fullname = user.firstname + " " + user.lastname;
+                    const reversed = user.lastname + " " + user.firstname;
                     return user.firstname.toLowerCase().includes(searchQuery) ||
                         user.lastname.toLowerCase().includes(searchQuery) ||
-                        user.email.toLowerCase().includes(searchQuery);
+                        fullname.includes(searchQuery) ||
+                        reversed.includes(searchQuery) ||
+                        user.email.toLowerCase().includes(searchQuery) ||
+                        user.id.includes(searchQuery); 
                 });
-                }
             },
             resetSearch() {
             this.searchedUser = '';

@@ -16,7 +16,8 @@
             <v-col>
               <h5 class="requestId"> Request ID: {{ request.id }}</h5>
               <p class="content"><b>Sending Date: </b>{{ request.sendingDate }}</p>
-              <p class="content">Content: {{ request.content }}</p>
+              <p class="content"><b>Document type:</b> {{ request.docType }}</p>
+              <p class="content"><b>Request motion: </b>{{ request.content }}</p>
               <v-divider inset class="mt-5"></v-divider>
             </v-col>
           </v-row>
@@ -36,7 +37,8 @@
             <v-col>
               <h5 class="requestId"> Request ID: {{ request.id }}</h5>
               <p class="content"><b>Sending Date:</b> {{ request.sendingDate }}</p>
-              <p class="content">Content: {{ request.content }}</p>
+              <p class="content"><b>Document type:</b> {{ request.docType }}</p>
+              <p class="content"><b>Request motion:</b> {{ request.content }}</p>
               <p class="content">status: {{ request.status }}</p>
               <v-divider inset class="mt-5"></v-divider>
             </v-col>
@@ -62,7 +64,8 @@
       <p class="date"><b>Treatement date: </b>{{ Aanswer.treatmentDate }}</p>
       </v-expansion-panel-title>
       <v-expansion-panel-text class="text-left">
-        <p class="motion mb-2">Request content: {{ Aanswer.content }}</p>
+        <p class="motion mb-2"><b>Document type:</b> {{ Aanswer.file.type }}</p>
+        <p class="motion mb-2"><b>Request motion:</b> {{ Aanswer.content }}</p>
         <div class="d-flex">
         <v-menu>
           <template v-slot:activator="{ props }">
@@ -70,7 +73,7 @@
               color="primary"
               v-bind="props"
             >
-              Document
+              Download
             </v-btn>
           </template>
           <v-list>
@@ -80,7 +83,13 @@
           </v-list>
           <v-list>
             <v-list-item class="down">
-              <v-list-item-title><v-btn class="download mb-3" @click="pdfToImage(Aanswer.file.fileData.data)" prepend-icon="mdi-file-download" variant="plain">Word</v-btn></v-list-item-title>
+              <v-list-item-title><v-btn class="download mb-3" @click="PdfDownlaod(Aanswer.file.fileData.data, Aanswer.file.type)" prepend-icon="mdi-file-download" variant="plain">Pdf</v-btn></v-list-item-title>
+            </v-list-item>
+            <v-list-item class="down">
+              <v-list-item-title><v-btn class="download mb-3" @click="imageDownlaod(Aanswer.file.fileData.data, Aanswer.file.type)" prepend-icon="mdi-file-download" variant="plain">Image</v-btn></v-list-item-title>
+            </v-list-item>
+            <v-list-item class="down">
+              <v-list-item-title><v-btn class="download mb-3" @click="DocxDownlaod(Aanswer.file.fileData.data, Aanswer.file.type)" prepend-icon="mdi-file-download" variant="plain">Docx</v-btn></v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -107,8 +116,8 @@
           <p class="date"><b>Treatement date: </b>{{ answer.treatmentDate }}</p>
           </v-expansion-panel-title>
           <v-expansion-panel-text class="text-left">
-          <p class="motion mb-2"><b>Request content : </b> {{ answer.content }}</p>
-          <p class="motion "><b>Denial motion : </b> {{ answer.motion }}</p>
+            <p class="motion mb-2"><b>Request content : </b> {{ answer.content }}</p>
+            <p class="motion "><b>Denial motion : </b> {{ answer.motion }}</p>
           </v-expansion-panel-text>
       </v-expansion-panel>
       </v-expansion-panels>
@@ -299,45 +308,207 @@
             link.click();
 
             window.URL.revokeObjectURL(link.href);
-            console.log(this.createFile(data, mimeType, fileName))
         },
-        pdfToImage(pdf){
-            let file = this.createFile(pdf, 'image/png', 'file.jpg');
-            console.log(file)
-            const formData = new FormData();
-            formData.append('pdf', file);
-            axios.post('http://localhost:8081/edrms/employee/convert/pdf-to-images', formData, {
+        pdfToImage(pdf, type){
+            axios.post('http://localhost:8081/edrms/employee/convert/pdf-to-images', pdf, {
                   headers: {
                   'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
-                  'Content-Type': 'multipart/form-data',
-                  }})
+                  'Content-Type': 'text/plain',
+                  },
+                  responseType: 'blob',
+                })
               .then(response => {
-                  this.downloadBlob(response.data, 'image/png', 'file.png')
+                const imageUrl = URL.createObjectURL(new Blob([response.data]));
+                
+                // Create a link element
+                const link = document.createElement('a');
+                link.href = imageUrl;
+
+                // Set the download attribute to force download
+                link.setAttribute('download', `${type}.jpg`);
+
+                // Append the link to the body
+                document.body.appendChild(link);
+
+                // Programmatically click the link to trigger download
+                link.click();
+
+                // Clean up: revoke the blob URL
+                URL.revokeObjectURL(imageUrl);
               })
               .catch(error => {
                   console.error(error)
                   console.log('error with converting file')
               });
         },
-        createFile(data, mimeType, fileName) {
-          // Convert data to array buffer
-          const arrayBuffer = new Uint8Array(data.length);
-          for (let i = 0; i < data.length; i++) {
-              arrayBuffer[i] = data.charCodeAt(i);
-          }
+        getFileTypeFromSignature(fileData) {
+                const signature = this.base64ToHex(fileData.slice(0, 4).toString("hex"));
+                const signatures = {
+                    "ffd8ff": "image/jpeg",
+                    "89504e": "image/png",
+                    "255044": "application/pdf",
+                    "504b03": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                };
+                const lowerSignature = signature.toLowerCase();
+                return signatures[lowerSignature] || "unknown";
+        },
+        base64ToHex(base64String) {
+                const binaryString = atob(base64String);
 
-          // Create blob
-          const blob = new Blob([arrayBuffer], { type: mimeType });
+                let hexString = '';
+                for (let i = 0; i < binaryString.length; i++) {
+                const hex = binaryString.charCodeAt(i).toString(16);
+                hexString += ('00' + hex).slice(-2);
+                }
+                return hexString.toUpperCase();
+            },
+        imageDownlaod(data, type){
+          const fileType = this.getFileTypeFromSignature(data)
+          const decodedData = atob(data);
+          switch (fileType) {
+                    case "image/jpeg":
+                      this.downloadBlob(decodedData, 'image/jpeg', `${type}.png`);
+                    case "image/png":
+                      this.downloadBlob(decodedData, 'image/png', `${type}.png`);
+                      break;
+                    case "application/pdf":
+                      this.pdfToImage(data, type)
+                      break;
+                    case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                      break;
+                    default:
+                    break;
+                }
+        },
+        ImageToPdf(image, type){
+              axios.post('http://localhost:8081/edrms/employee/convert/image-to-pdf', image, {
+                    headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+                    'Content-Type': 'text/plain',
+                    },
+                    responseType: 'blob',
+                  })
+                .then(response => {
+                  const pdfURL = URL.createObjectURL(new Blob([response.data]));
+                  
+                  // Create a link element
+                  const link = document.createElement('a');
+                  link.href = pdfURL;
 
-          // Create a File object
-          const file = new File([blob], fileName, {
-              type: mimeType,
-              lastModified: new Date().getTime() // Set lastModified timestamp to current time
+                  // Set the download attribute to force download
+                  link.setAttribute('download', `${type}.pdf`);
+
+                  // Append the link to the body
+                  document.body.appendChild(link);
+
+                  // Programmatically click the link to trigger download
+                  link.click();
+
+                  // Clean up: revoke the blob URL
+                  URL.revokeObjectURL(pdfURL);
+                })
+                .catch(error => {
+                    console.error(error)
+                    console.log('error with converting file')
+                });
+          },
+        PdfDownlaod(data, type){
+          const fileType = this.getFileTypeFromSignature(data)
+          const decodedData = atob(data);
+          switch (fileType) {
+                    case "image/jpeg":
+                    case "image/png":
+                      this.ImageToPdf(data, type)
+                      break;
+                    case "application/pdf":
+                      this.downloadBlob(decodedData, 'application/pdf', `${type}.pdf`);
+                      break;
+                    default:
+                    break;
+                }
+        },
+        PdfToDocx(pdf, type){
+              axios.post('http://localhost:8081/edrms/employee/convert/pdf-to-docx', pdf, {
+                    headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+                    'Content-Type': 'text/plain',
+                    },
+                    responseType: 'blob',
+                  })
+                .then(response => {
+                  const pdfURL = URL.createObjectURL(new Blob([response.data]));
+                  
+                  // Create a link element
+                  const link = document.createElement('a');
+                  link.href = pdfURL;
+
+                  // Set the download attribute to force download
+                  link.setAttribute('download', `${type}.docx`);
+
+                  // Append the link to the body
+                  document.body.appendChild(link);
+
+                  // Programmatically click the link to trigger download
+                  link.click();
+
+                  // Clean up: revoke the blob URL
+                  URL.revokeObjectURL(pdfURL);
+                })
+                .catch(error => {
+                    console.error(error)
+                    console.log('error with converting file')
+                });
+          },
+          ImageToDocx(image, type){
+            axios.post('http://localhost:8081/edrms/employee/convert/image-to-pdf', image, {
+                    headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+                    'Content-Type': 'text/plain',
+                    },
+                    responseType: 'blob',
+                  })
+                .then(response => {
+                  this.blobToBase64(response.data).then(base64String => {
+                      this.PdfToDocx(base64String, type)
+                  })
+                  .catch(error => {
+                      console.error('Error converting blob to base64:', error);
+                  });
+                })
+                .catch(error => {
+                    console.error(error)
+                    console.log('error with converting file')
+                });
+          },
+          DocxDownlaod(data, type){
+          const fileType = this.getFileTypeFromSignature(data)
+          const decodedData = atob(data);
+          switch (fileType) {
+                    case "image/jpeg":
+                    case "image/png":
+                      this.ImageToDocx(data, type)
+                      break;
+                    case "application/pdf":
+                      this.PdfToDocx(data,type)
+                      break;
+                    case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                      this.downloadBlob(decodedData, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', `${type}.DOC`);
+                    default:
+                    break;
+                }
+        },
+        blobToBase64(blob) {
+          return new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => {
+                  const base64String = reader.result.split(',')[1];
+                  resolve(base64String);
+              };
+              reader.onerror = reject;
+              reader.readAsDataURL(blob);
           });
-
-          return file;
-      }
-      }
+      },
+    }
   }
 </script>
 

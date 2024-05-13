@@ -5,7 +5,7 @@
         <form @submit.prevent="submit">
             <h2 class="mb-10 text-left">Add a document</h2>  
                         <v-row> 
-                            <v-file-input clearable label="Add File" variant="outlined" v-model="file" @change="ocr(this.file[0])"></v-file-input>
+                            <v-file-input clearable label="Add File" variant="outlined" v-model="file" @change="console.log(this.file[0])"></v-file-input>
                         </v-row>
                         <v-row class="addbtn">
                             <v-btn
@@ -76,7 +76,7 @@
             <p class="doc"> Document type: {{ document.type }}</p>
             <div class="text-right pa-4">
                 <v-btn @click="buttonFunction(index, fileDataArray[index].data)" color="#0a66c2">
-                Open file
+                Preview file
                 </v-btn>
 
                 <v-dialog
@@ -103,13 +103,6 @@
     </v-card>
     </v-col>
     </v-row>
-    <df-messenger
-    chat-icon="https:&#x2F;&#x2F;cdn-icons-png.flaticon.com&#x2F;512&#x2F;4298&#x2F;4298373.png"
-    intent="WELCOME"
-    chat-title="EDRMS"
-    agent-id="6f206d09-b1ca-4f31-9a0e-c1fdb7a7b825"
-    language-code="en"
-    ></df-messenger>
     <UserNav/>
     <FooterComponent/>
 </template>
@@ -298,10 +291,18 @@
                 }
             },
             async ocr(file){
-                const text = await this.extractText(file);
-                this.OCRData = text
-                await this.extractID(text);
-                await this.extractType(text).finally(this.diss = false)
+                if((file.type === "image/jpeg") || (file.type === "image/png")){
+                    const text = await this.extractText(file);
+                    this.OCRData = text
+                    await this.extractID(text);
+                    await this.extractType(text).finally(this.diss = false)
+                } else if((file.type === "application/pdf")){
+                    const convertedPDF = await this.pdfToImage(file)
+                    const text = await this.extractText(convertedPDF);
+                    this.OCRData = text
+                    await this.extractID(text);
+                    await this.extractType(text).finally(this.diss = false)
+                }
             }, 
             async extractText(file){
                 const worker = await createWorker('fra');
@@ -354,6 +355,22 @@
                     }
                 }
                 console.log("No Document type is found.");
+            },
+            async pdfToImage(pdf){
+            axios.post('http://localhost:8081/edrms/employee/convert/pdf-to-images', pdf, {
+                  headers: {
+                  'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+                  'Content-Type': 'text/plain',
+                  },
+                  responseType: 'blob',
+                })
+                .then(response => {
+                return response.data
+                })
+                .catch(error => {
+                    console.error(error)
+                    console.log('error with converting file')
+                });
             },
         },
     }

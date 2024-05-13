@@ -10,20 +10,21 @@
                     <h2 class="pb-5">Average response time: {{ this.averageResponseTime }} m</h2>
                     <canvas id="responseTimeChart"></canvas>
             </v-col>
+            
         </v-row>
         <v-row>
-            <v-col cols="4">
-                <h2 class="pb-5 text-left">Most requested documents:</h2>
+            <v-col cols="3">
+                <h2 class="pb-5 text-left">Approved / Denied:</h2>
                 <canvas ref="doughnutChart"></canvas>
             </v-col>
-            <v-col cols="4">
-                <h2 class="pb-5 text-left">Most requested documents:</h2>
-                <canvas ref="polarAreaChart"></canvas>
-            </v-col>
-            <v-col cols="4">
+            <v-col cols="3">
                 <h2 class="pb-5 text-left">Users count: {{ this.totalUsers }}</h2>
                 <canvas ref="employeescount"></canvas>
             </v-col>
+            <v-col cols="5">
+                <h2 class="pb-5 text-left">Most requested documents:</h2>
+                <canvas ref="fourthChart"></canvas>
+            </v-col>            
         </v-row>
     </v-container>
     <df-messenger
@@ -77,8 +78,7 @@
                 data.forEach(doc => {
                         this.typesArray.push(doc.docType);
                     });
-                console.log(this.typesArray)
-                this.createPolarChart();
+                this.fourthChart();
             } catch (error) {
                 console.error('Error fetching data from MongoDB:', error);
             }
@@ -112,7 +112,7 @@
                     datasets: [{
                         label: 'Number of Requests',
                         data: requestCounts,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        backgroundColor: 'rgba(90 165 255 / 75%)',
                         borderColor: 'rgba(54, 162, 235, 1)',
                         borderWidth: 1
                     }]
@@ -180,10 +180,9 @@
                         const sum = responseTimes.reduce((acc, time) => acc + time, 0);
                         return sum / responseTimes.length;
                         }),
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: '#7EBC89',
+                        backgroundColor: '#7EBC89',
                         borderWidth: 2,
-                        fill: true
                     }]
                     },
                     options: {
@@ -242,14 +241,12 @@
                 datasets: [{
                     label: 'Treatments',
                     data: [treatedCounts.approved, treatedCounts.denied],
-                    backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)'],
-                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
-                    borderWidth: 1
+                    backgroundColor: ['#446eb5', '#FAF0CA'],
                 }]
                 },
                 options: {
                 responsive: true,
-                aspectRatio: 1.5,
+                aspectRatio: 1,
                 plugins: {
                     legend: {
                     position: 'top'
@@ -260,49 +257,35 @@
         },
 
         //fourth chart
-        createPolarChart() {
-
-            const data = this.countTypes(this.typesArray)
+        fourthChart() {
+            const data = this.countTypes(this.typesArray);
             // Extract labels and data values from the provided array
             const labels = data.map(item => item.word);
             const counts = data.map(item => item.count);
-            console.log(data)
-
-            // Create the Chart.js configuration object
-            const chartData = {
-            labels: labels,
-            datasets: [{
-                data: counts,
-                backgroundColor: [
-                'rgba(255, 99, 132, 0.5)',
-                'rgba(54, 162, 235, 0.5)',
-                'rgba(255, 206, 86, 0.5)',
-                'rgba(75, 192, 192, 0.5)',
-                'rgba(200, 183, 255, 0.8)',
-
-                // Add more colors if needed
-                ],
-            }]
-            };
 
             // Get the canvas element using the ref attribute
-            const canvas = this.$refs.polarAreaChart;
+            const ctx = this.$refs.fourthChart.getContext('2d')
 
-            // Ensure canvas exists before attempting to get context
-            if (canvas) {
-            const ctx = canvas.getContext('2d');
-
-            // Create the polar area chart
             new Chart(ctx, {
-                type: 'polarArea',
-                data: chartData,
-                options: {
-                    aspectRatio: 1
-                }
-            });
-            } else {
-            console.error('Canvas element not found');
-            }
+                    type: 'bar',
+                    data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Number of Requests',
+                        data: counts,
+                        backgroundColor: 'rgba(90 165 255 / 75%)',
+                    }]
+                    },
+                    options: {
+                        responsive: true,
+                        aspectRatio: 1,
+                    scales: {
+                        y: {
+                        beginAtZero: true
+                        }
+                    }
+                    }
+                });
         },
         countTypes(words) {
             const wordCounts = {};
@@ -317,7 +300,6 @@
 
             return wordCountArray;
         },
-
         //fifth chart
         async usersCountdata() {
             try {
@@ -358,14 +340,12 @@
                 datasets: [{
                     label: 'count',
                     data: [Employees.hr, Employees.admin, Employees.employee],
-                    backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)', 'rgba(200, 183, 255, 0.8)'],
-                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
-                    borderWidth: 1
+                    backgroundColor: ['	#446eb5', '#FAF0CA', '#7EBC89'],
                 }]
                 },
                 options: {
                 responsive: true,
-                aspectRatio: 1.5,
+                aspectRatio: 1,
                 plugins: {
                     legend: {
                     position: 'top'
@@ -373,13 +353,14 @@
                 }
                 }
             });
-        }
+        },
+        
   },
 }
 </script>
 <style scoped>
     .v-container{
-        width: 1600px;
+        width: 1500px;
         margin-bottom: 150px;
     }
     .v-row{
