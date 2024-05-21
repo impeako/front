@@ -361,9 +361,29 @@
 <style scoped>
     .v-container{
         width: 1500px;
-        margin-bottom: 150px;
+        padding-bottom: 100px;
     }
     .v-row{
         justify-content: space-between;
+    }
+    @media screen and (max-width: 612px) {
+        .v-container{
+            display: flex;
+            flex-direction: column;
+            max-height: 100%;
+            width: 100%;
+            overflow: visible;
+            margin-top: 100px;
+        }
+        .v-col-5 {
+            flex: 100%;
+            max-width: 100%;
+            margin-bottom: 50px;
+        }
+        .v-col-3{
+            flex: 100%;
+            max-width: 100%;
+            margin-bottom: 50px;
+        }
     }
 </style>

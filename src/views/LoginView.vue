@@ -5,30 +5,31 @@
           <h2>Sign in</h2>
           <div class="container">
             <v-text-field
-          v-model="email"
-          :readonly="loading"
-          class="mb-2"
-          label="Email"
-          variant="outlined"
-          prepend-inner-icon="mdi-email-outline"
-          @keyup.enter="login"
-          autofocus
-          clearable
-        ></v-text-field>
+              v-model="email"
+              :readonly="loading"
+              class="mb-2"
+              label="Email"
+              variant="outlined"
+              prepend-inner-icon="mdi-email-outline"
+              @keyup.enter="login"
+              autofocus
+              clearable
+            ></v-text-field>
 
-        <v-text-field
-          v-model="password"
-          :readonly="loading"
-          label="Password"
-          placeholder="Enter your password"
-          :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-          :type="visible ? 'text' : 'password'"
-          prepend-inner-icon="mdi-lock-outline"
-          variant="outlined"
-          @click:append-inner="visible = !visible"
-          @keyup.enter="login"
-          clearable
-        ></v-text-field>
+            <v-text-field
+              v-model="password"
+              :readonly="loading"
+              label="Password"
+              placeholder="Enter your password"
+              :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+              :type="visible ? 'text' : 'password'"
+              prepend-inner-icon="mdi-lock-outline"
+              variant="outlined"
+              @click:append-inner="visible = !visible"
+              @keyup.enter="login"
+              clearable
+            ></v-text-field>
+            <p class="wrong" v-if="wrong">Please check your credentials!</p>
             <v-btn @click="login" :loading=this.loading>Sign In</v-btn>
           </div>
           <a href="#" class="forgot">Forgot Password?</a>
@@ -49,6 +50,7 @@
         password: '',
         loading: false,
         visible: false,
+        wrong: false,
       };
     },
     methods:{
@@ -73,7 +75,7 @@
           })
           .catch(error => {
             console.error(error);
-            console.log('Authentication failed. Please check your credentials.');
+            this.wrong = true
           })
           .finally(() => {
           this.loading = false;
@@ -152,6 +154,10 @@
       }
       .v-text-field{
         width: 80%;
+      }
+      .wrong{
+        color: rgb(213, 65, 65);
+        font-weight: 400;
       }
       @media screen and (max-width: 612px) {
         .login {

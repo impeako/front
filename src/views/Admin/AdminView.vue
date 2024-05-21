@@ -530,6 +530,7 @@
             width: 100%;
             overflow: visible;
             margin-top: 100px;
+            padding-bottom: 100px;
         }
         .v-col-6 {
             flex: 100%;

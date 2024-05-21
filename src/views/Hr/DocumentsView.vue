@@ -381,6 +381,7 @@
         max-height: 600px;
         overflow: hidden;
         padding: 20px;
+        margin-bottom: 100px;
     }
     .v-card--variant-elevated {
         box-shadow: none;

@@ -80,8 +80,6 @@
             <v-list-item class="down">
               <v-list-item-title><v-btn class="download mb-3" @click="downloadFile(Aanswer)" prepend-icon="mdi-file-download" variant="plain">Original</v-btn></v-list-item-title>
             </v-list-item>
-          </v-list>
-          <v-list>
             <v-list-item class="down">
               <v-list-item-title><v-btn class="download mb-3" @click="PdfDownlaod(Aanswer.file.fileData.data, Aanswer.file.type)" prepend-icon="mdi-file-download" variant="plain">Pdf</v-btn></v-list-item-title>
             </v-list-item>
@@ -145,7 +143,7 @@
         hide-details
       ></v-autocomplete>
       <v-dialog
-         v-model="dialog"
+        v-model="dialog"
         persistent
         width="auto"
       >
@@ -603,11 +601,24 @@
     .me-4 {
       margin-inline-end: 0;
     }
-    .mb-10 {
-      margin-bottom: 20px !important;
+    .ma-0 {
+      margin-bottom: 50px !important;
     }
     button{
-      margin: 0;
+      width: 50%;
+      margin-left: 20px;
+    }
+    .v-icon{
+      transform: rotate(90deg);
+    }
+    .doc-request{
+      width: 100%;
+    }
+    .v-autocomplete{
+      background-color: white;
+      max-width: 100%;
+      width: 90%;
+      margin-bottom: 20px;
     }
   }
 </style>
